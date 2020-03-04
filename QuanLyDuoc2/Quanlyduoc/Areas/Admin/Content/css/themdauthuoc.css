@@ -1,0 +1,66 @@
+﻿.content-header h1 {
+    margin-bottom: 10px;
+}
+
+.form-select {
+    width: 46%;
+    float: left;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.fleft {
+    margin-right: 15px;
+}
+
+#donviluukho .list-donviluukho {
+    padding: 0px;
+    margin: 0px;
+}
+
+    #donviluukho .list-donviluukho li {
+        display: inline-block;
+        width: 24.7%;
+    }
+
+        #donviluukho .list-donviluukho li .input {
+            width: 70%;
+        }
+        #donviluukho .list-donviluukho li input {
+            max-width: 100%;
+        }
+
+    #donviluukho .list-donviluukho .disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+@media (max-width: 767px) {
+    select {
+        max-width: 100%;
+    }
+
+    .content-header h1 {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .col-xs-12 {
+        padding-right: 0px;
+        padding-left: 0px;
+    }
+
+    .box.box-primary {
+        border-top-color: darkgray;
+    }
+
+    #donviluukho .list-donviluukho li {
+        display: inline-block;
+        width: 24%;
+    }
+
+        #donviluukho .list-donviluukho li .input {
+            width: 90%;
+        }
+}

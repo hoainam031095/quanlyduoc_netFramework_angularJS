@@ -1,0 +1,23 @@
+﻿
+#modal-default1 .modal-dialog{
+    width: 40%;
+}
+#modal-default .modal-dialog {
+    width: 60%;
+}
+#modal-default2 .modal-dialog {
+    width: 40%;
+}
+
+
+@media (max-width: 767px) {
+    #modal-default1 .modal-dialog {
+        width: 94%;
+    }
+    #modal-default .modal-dialog {
+        width: 94%;
+    }
+    #modal-default2 .modal-dialog {
+        width: 94%;
+    }
+}

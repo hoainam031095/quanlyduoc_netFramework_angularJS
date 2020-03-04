@@ -1,0 +1,229 @@
+﻿
+@{
+    ViewBag.Title = "Chấm công";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/chamcong.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+
+            function info2() {
+                // Try HTML5 geolocation.
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        $scope.Lat = pos.lat,
+                        $scope.Lng = pos.lng
+                        //$scope.Lat = "20.987722599999998";
+                        //$scope.Lng = "105.83566250000001";
+
+                        $.ajax({
+                            type: "post",
+                            url: "chamCong",
+                            data: {
+                                xlat: $scope.Lat,
+                                xlng: $scope.Lng
+                            },
+                            success: function (data) {
+                                if (data.success === "success") {
+                                    $scope.cong = {};
+                                    $scope.cong.DiaDiem = $scope.Lat + ", " + $scope.Lng;
+                                    $scope.cong.ThoiGian = data.ThoiGian;
+                                    $scope.cong.XepLoai = data.xeploai;
+                                    $scope.model.JListChamCong.push($scope.cong);
+                                    $scope.$applyAsync();
+                                    swal({
+                                        type: data.success,
+                                        title: data.msg,
+                                        showConfirmButton: true,
+                                        timer: 1500
+                                    });
+                                }
+                                else {
+                                    swal(data.msg, "", data.success);
+                                }
+                            }
+                        });
+                        $scope.$applyAsync();
+
+                    }, function () {
+                        console.log("abc");
+                    });
+                } else {
+                    alert("Lỗi!");
+                }
+            }
+
+            //Chấm công
+            $scope.kiemTra = function () {
+                info2();
+            };
+
+            //Xin nghỉ
+            $scope.xinNghi = function () {
+                $.ajax({
+                    type: "post",
+                    url: "xinNghi",
+                    data: {
+                        ghiChu: $scope.lyDoXinNghi
+                    },
+                    success: function (data) {
+                        if (data.success === "success") {
+                            $scope.cong = {};
+                            $scope.cong.ThoiGian = data.ThoiGian;
+                            $scope.cong.XepLoai = data.xeploai;
+                            $scope.cong.GhiChu = $scope.lyDoXinNghi;
+                            $scope.model.JListChamCong.push($scope.cong);
+                            $scope.lyDoXinNghi = "";
+                            $scope.$applyAsync();
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $("#modal-default").modal("hide");
+                        }
+                        else {
+                            swal(data.msg, "", data.success);
+                        }
+                    }
+                });
+            }
+
+        scope = $scope;
+        }]);
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        @* Edit model *@
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog" style="width: 600px;">
+                <form novalidate>
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Lý do xin nghỉ</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Lý do xin nghỉ:</label>
+                                <input class="form-control" ng-model="lyDoXinNghi" required />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" ng-click="xinNghi()">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./edit Modal *@
+
+        <div class="row">
+            <div class="col-xs-12 col-md-3 cham-cong">
+                <!-- general form elements -->
+                <div class="box box-primary">
+                    <div class="box-body">
+                        <div>
+                            <img ng-src="~/Content/Admin/images/{{model.JNhanVien.avatar}}" alt="Avatar" />
+                        </div>
+                        <div class="info">
+                            <table>
+                                <tr>
+                                    <td>Họ tên:</td>
+                                    <td>{{model.JNhanVien.HoTen}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Ngày sinh:</td>
+                                    <td>{{model.JNhanVien.NgaySinh}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Địa chỉ:</td>
+                                    <td>{{model.JNhanVien.DiaChi}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Số điện thoại:</td>
+                                    <td>{{model.JNhanVien.SDT}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="box-footer">
+                            <button class="btn btn-info" ng-click="kiemTra()" style="margin-right:10px;">Chấm công</button>
+                            <button class="btn btn-primary" data-toggle="modal" data-target="#modal-default" >Xin nghỉ</button>
+                        </div>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <div class="col-xs-12 col-md-9 danh-sach-cong">
+                <!-- general form elements -->
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3>Danh sách công</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body " ng-cloak>
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Địa điểm</th>
+                                    <th>Thời gian</th>
+                                    <th>Xếp loại</th>
+                                    <th>Ghi chú</th>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JListChamCong">
+                                    <td class="col-md-3 col-xs-3">{{item.DiaDiem}}</td>
+                                    <td class="col-md-3 col-xs-3">{{item.ThoiGian}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.XepLoai === 1?"Đúng giờ": (item.XepLoai === 2?"Muộn":(item.XepLoai === 3?"Có phép": "Vắng"))}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.GhiChu}}</td>
+                                    <td class="col-md-1 col-sm-1" style="text-align: center;">
+                                        <a href='' ng-click="" data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+
+                    </div>
+                </div>
+                <!-- /.box -->
+            </div>
+
+            <!-- /.col -->
+
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+

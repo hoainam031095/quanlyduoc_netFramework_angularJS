@@ -1,0 +1,421 @@
+﻿
+@{
+    ViewBag.Title = "DashBoard";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+
+}
+
+@section scripts{
+    <!-- Chart -->
+    <script src="~/Content/Admin/bower_components/chart.js/Chart.js"></script>
+    @*<script src="~/Content/Admin/dist/js/pages/dashboard2.js"></script>*@
+
+    <!--Biểu đồ js plugin-->
+    <script src="~/Content/Admin/bower_components/chart.js/src/ChartGoogle/loader.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="~/Content/Admin/bower_components/chart.js/src/Chart.HoaiNam.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            $scope.select = {
+                year: 2019
+            };
+            $scope.nowYear = new Date().getFullYear();
+            $scope.arrayYear =
+                [
+                    { 'ID': '1', 'year': $scope.nowYear - 4 },
+                    { 'ID': '2', 'year': $scope.nowYear - 3 },
+                    { 'ID': '3', 'year': $scope.nowYear - 2 },
+                    { 'ID': '4', 'year': $scope.nowYear - 1 },
+                    { 'ID': '5', 'year': $scope.nowYear},
+                ];
+            $scope.tongDoanhSo = $scope.model.JtongdoanhSo;
+
+            $("#dataChartLine").html($scope.tongDoanhSo);
+
+            $scope.layDoanhSoNam = function () {
+                $scope.$applyAsync();
+                $.ajax({
+                    type: "post",
+                    url: "Home/layDoanhSoNam",
+                    data: { year: $scope.select.year},
+                    success: function (data) {
+                        $("#dataChartLine").html(data.JtongdoanhSo);
+                        window.onload();
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+
+}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Tổng quan
+            <!-- <small>Tháng 10</small> -->
+        </h1>
+        <!-- <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+            <li class="active">Dashboard</li>
+        </ol> -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <!-- Info boxes -->
+        <div class="row">
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-aqua"><i class="fa fa-line-chart"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Doanh số</span>
+                        <span class="info-box-number">{{model.JdoanhSo | number}}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="ion ion-ios-people-outline"></i></span>
+                    <div class="info-box-content">
+                        <span class="info-box-text">Khách hàng</span>
+                        <span class="info-box-number">{{model.JcountKhachHang | number}}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <!-- fix for small devices only -->
+            <div class="clearfix visible-sm-block"></div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="fa fa-cart-plus" aria-hidden="true"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Đơn hàng</span>
+                        <span class="info-box-number">{{model.JcountDonhang | number}}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon  bg-yellow"><i class="fa fa-usd" aria-hidden="true"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Đầu thuốc hiện có</span>
+                        <span class="info-box-number">{{model.JdauThuoc | number}}</span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+            <!-- /.col -->
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Báo cáo tổng quan doanh số của shop</h3>
+                        <input id="yearSelect" value="{{select.year}}" style="display: none;" />
+                        <select ng-options="item.year as item.year for item in arrayYear" ng-model="select.year"
+                                ng-change="layDoanhSoNam()"
+                                style="border: none; font-size: 17px; font-weight: 600;"></select>
+
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <!-- <div class="btn-group">
+                                <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+                                  <i class="fa fa-wrench"></i></button>
+                                <ul class="dropdown-menu" role="menu">
+                                  <li><a href="#">Action</a></li>
+                                  <li><a href="#">Another action</a></li>
+                                  <li><a href="#">Something else here</a></li>
+                                  <li class="divider"></li>
+                                  <li><a href="#">Separated link</a></li>
+                                </ul>
+                            </div> -->
+                            <button type="button" class="btn btn-box-tool" data-widget="remove">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="chart">
+                                    <!-- Sales Chart Canvas -->
+                                    <!-- <canvas id="salesChart" style="height: 180px;"></canvas> -->
+                                    <span id="dataChartLine" style="display: none;">{{tongDoanhSo}}</span> <!--Biểu đồ doanh thu -->
+                                    <div id="chartContainer" style="height: 300px; width: 100%;"></div>
+                                </div>
+                                <!-- /.chart-responsive -->
+                            </div>
+                            @*<div class="col-md-2">
+                                    <div class="progress-group" style="height: 30px;">
+                                    </div>
+                                    <div class="progress-group">
+                                        <i class="fa fa-circle" style="color: rgba(220,220,220,1)"></i><span class="progress-text"> Năm 2017</span>
+                                    </div>
+                                    <!-- /.progress-group -->
+                                    <div class="progress-group">
+                                        <i class="fa fa-circle" style="color: rgba(26,154,20,1)"></i><span class="progress-text"> Năm 2018</span>
+                                    </div>
+                                    <!-- /.progress-group -->
+                                    <!-- /.progress-group -->
+                                </div>*@
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <!-- ./box-body -->
+
+                    @*<div class="box-footer">
+                        <div class="row">
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="description-block border-right">
+                                    <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+                                    <h5 class="description-header">$35,210.43</h5>
+                                    <span class="description-text">Tổng doanh thu</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="description-block border-right">
+                                    <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+                                    <h5 class="description-header">$10,390.90</h5>
+                                    <span class="description-text">Tổng chi phí</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="description-block border-right">
+                                    <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
+                                    <h5 class="description-header">$24,813.53</h5>
+                                    <span class="description-text">Tổng lợi nhuận</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-sm-3 col-xs-6">
+                                <div class="description-block">
+                                    <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
+                                    <h5 class="description-header">$4,813.53</h5>
+                                    <span class="description-text">Tổng kết</span>
+                                </div>
+                                <!-- /.description-block -->
+                            </div>
+                        </div>
+                        <!-- /.row -->
+                    </div>*@
+
+
+                    <!-- /.box-footer -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- Main row -->
+        <div class="row">
+            <!-- Left col -->
+            <div class="col-md-12">
+                <!-- MAP & BOX PANE -->
+                <div class="box box-success">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Thống kê top 5 khu vực tiêu thụ nhiều</h3>
+
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body no-padding">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-5">
+                                <div class="pad">
+                                    <div id="world-map-markers" style="height: 325px;">
+                                        <img src="~/Content/Admin/images/ban-do-vet-nam-map-co-lon.jpg" style="height: 325px; width: 100%">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.col -->
+                            <div class="col-xs-12 col-sm-12 col-md-7">
+                                <span id="data-piechart-string" style="display: none">{{model.JkhuVucTieuThu}}</span>
+                                <span id="data-piechart-number" style="display: none">{{model.JnumberKhuVuc}}</span>
+                                <div id="piechart" style="width: 600px; height: 360px;"></div>
+                            </div>
+                        </div>
+                        <!-- /.row -->
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.box -->
+        <div class="row">
+            <div class="col-md-6 col-sm-6">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Nhóm sản phẩm được tiêu thụ nhiều</h3>
+
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên nhóm</th>
+                                        <th>Số lượng hóa đơn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in model.JnhomBanChay">
+                                        <td>{{model.JnhomBanChay.indexOf(item) + 1}}</td>
+                                        <td class="col-sm-8">{{item.TenNhom}}</td>
+                                        <td>
+                                            <div class="sparkbar" data-color="#00a65a" data-height="20">{{item.count}}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer clearfix">
+                        <!-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a> -->
+                        <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">Xem tất cả</a>
+                    </div>
+                    <!-- /.box-footer -->
+                </div>
+            </div>
+            <!-- /.col -->
+
+            <div class="col-md-6">
+                <!-- USERS LIST -->
+                <div class="box box-danger">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Top khách hàng thường xuyên</h3>
+
+                        <div class="box-tools pull-right">
+                            @*<span class="label label-success ">8 khách hàng thường xuyên</span>*@
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove">
+                                <i class="fa fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body no-padding">
+                        <ul class="users-list clearfix">
+                            <li ng-repeat="item in model.JkhachHangThuongXuyen">
+                                <img ng-src="~/Content/Admin/dist/img/user{{model.JkhachHangThuongXuyen.indexOf(item)+1}}.jpg" src="" alt="User Image">
+                                <a class="users-list-name" href="#">{{item.HoTen}}</a>
+                                <span class="users-list-date">{{item.count}}</span>
+                            </li>
+                        </ul>
+                        <!-- /.users-list -->
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer text-center">
+                        <a href="javascript:void(0)" class="uppercase">Xem tất cả</a>
+                    </div>
+                    <!-- /.box-footer -->
+                </div>
+                <!--/.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- TABLE: LATEST ORDERS -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Top sản phẩm được tiêu thụ nhiều</h3>
+
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <table class="table no-margin">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng hóa đơn</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in model.JdauthuocBanChay">
+                                        <td>{{model.JdauthuocBanChay.indexOf(item) + 1}}</td>
+                                        <td class="col-sm-8">{{item.TenDauThuoc}}</td>
+                                        <td>
+                                            <div class="sparkbar" data-color="#00a65a" data-height="20">{{item.count}}</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.table-responsive -->
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer clearfix">
+                        <!-- <a href="javascript:void(0)" class="btn btn-sm btn-info btn-flat pull-left">Place New Order</a> -->
+                        <a href="javascript:void(0)" class="btn btn-sm btn-default btn-flat pull-right">Xem tất cả</a>
+                    </div>
+                    <!-- /.box-footer -->
+                </div>
+            </div>
+        </div>
+        <!-- /.box -->
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

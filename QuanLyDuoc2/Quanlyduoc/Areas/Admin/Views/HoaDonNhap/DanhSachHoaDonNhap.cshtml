@@ -1,0 +1,117 @@
+﻿@model IEnumerable<Quanlyduoc.Models.HoaDonNhap>
+
+@{
+    ViewBag.Title = "DanhSachHoaDonXuat";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    }
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>
+                Danh sách khách hàng
+            </h1>
+
+            <a href="@Url.Action("ThemHoaDonNhap", "HoaDonNhap")"> <button class="btn btn-primary"> Thêm mới </button> </a>
+            @*<button class="btn btn-primary " style="float:right" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem() ">Thêm mới</button>*@
+        </section>
+
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                @using (Html.BeginForm("XoaHoaDonNhap", "HoaDonNhap", FormMethod.Post))
+                {
+                    <div class="modal-content">
+                        <div class="modal-header">
+
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+
+                            <h4 class="modal-title">Xác nhận thao tác xóa</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Bạn có muốn xóa đầu thuốc: <span id="maNXS"></span> ?</h3>
+                            <input id="maHD" style="color:#000;" type="hidden" name="maHD" />
+                        </div>
+                        <div class="modal-footer">
+                            <input class="btn btn-outline pull-left" data-dismiss="modal" value="Hủy" style="width: 50px;">
+                            <button type="submit" class="btn btn-outline">Thực hiện xóa</button>
+                        </div>
+                    </div>
+                }
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="row-header">
+                        @*<button class="btn btn-primary" style="width: 80px;">Thêm mới</button>*@
+                    </div>
+                    <div class="box">
+                        <!-- /.box-header -->
+                        <div class="box-body">
+                            <table id="example2" class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Ma HD</th>
+                                        <th>Ngày Nhập</th>
+                                        <th>Tên Kho</th>
+                                        <th>Nhà Sản Xuất</th>
+                                        <th>Tài Khoản</th>
+                                        <th>Ghi Chú</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                @{int i = 1;}
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                    <tr>
+                                        <td>@i</td>
+                                        @*<td><a href="@Url.Action("Index", "ChiTietHoaDonNhap", new { mahd=item.MaHD})">@Html.DisplayFor(modelItem => item.MaHD)</a></td>*@
+                                        <td><a href="/Admin/ChiTietHoaDonNhap?mahd=@Html.DisplayFor(modelItem => item.MaHD)">@Html.DisplayFor(modelItem => item.MaHD)</a></td>
+                                        <td>@Html.DisplayFor(modelItem => item.NgayNhap)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Kho.TenKho)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.NhaSanXuat.TenNSX)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.TaiKhoan.TenTaiKhoan)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.GhiChu)</td>
+                                        <td>
+                                            <a href='@Url.Action("SuaHoaDonNhap","HoaDonNhap", new { maHD = item.MaHD })' style="padding: 0px 5px; font-size: 16px;"><i class="fa fa-pencil"></i></a>
+                                            <a href="" onclick='loadDataModal("@item.MaHD","@item.MaNSX");' data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"> <i class="fa fa-trash-o"> </i> </a>
+                                        </td>
+                                    </tr>
+                                        i++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+        </section>
+        <!-- /.content -->
+    </div>
+<script type="text/javascript">
+    function loadDataModal(maHD, maNSX) {
+        document.getElementById("maHD").value = maHD;
+        document.getElementById("maNXS").innerHTML = maNSX;
+    };
+</script>

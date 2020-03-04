@@ -1,0 +1,56 @@
+﻿<style>
+                #menu-page {
+                    float: right;
+                    margin-top: 30px;
+                }
+
+                    #menu-page li {
+                        display: inline-block;
+                    }
+
+                        #menu-page li.typeNone {
+                            display: none;
+                        }
+
+                        #menu-page li a {
+                            border: 1px solid #fff;
+                            background-color: #419ce1;
+                            color: #fff;
+                            padding: 9px 15px 9px 15px;
+                            vertical-align: middle;
+                        }
+
+                            #menu-page li a:hover {
+                                background-color: #ddd;
+                                color: #419ce1;
+                                text-decoration: none;
+                            }
+
+                            #menu-page li a.current {
+                                background-color: #fff;
+                                color: #000;
+                                border: 1px solid #419ce1;
+                            }
+            </style>
+            <div id="menu-page">
+                <ul id="menu-list-page">
+                    <li class="page-list">
+                        <a href="javascript:void(0);" ng-click="changePage(1)"><<</a>
+                    </li>
+                    <li class="page-list" ng-class="curentPage > 1?'':'disabled'">
+                        <a href="javascript:void(0);" ng-click="changePage(curentPage - 1)"><</a>
+                    </li>
+
+                    <li class="page-list"
+                        ng-repeat="page in listIndexPage">
+                        <a href="javascript:void(0);" ng-class="page==curentPage?'current':''" ng-click="changePage(page)">{{page}}</a>
+                    </li>
+
+                    <li class="page-list" ng-class="curentPage < pageNumber?'':'disabled'">
+                        <a href="javascript:void(0);" ng-click="changePage(curentPage + 1)">></a>
+                    </li>
+                    <li class="page-list">
+                        <a href="javascript:void(0);" ng-click="changePage(pageNumber)">>></a>
+                    </li>
+                </ul>
+            </div>

@@ -1,0 +1,17 @@
+﻿body {
+}
+
+.content-wrapper .content .modal-dialog {
+    width: 50%;
+}
+
+
+
+@media (max-width: 767px) {
+    .content-wrapper .content .modal-dialog {
+        width: 94%;
+    }
+    .content .modal-dialog .modal-body .form-group select {
+        max-width: 100%;
+    }
+}

@@ -1,0 +1,360 @@
+﻿@*@model IEnumerable<Quanlyduoc.Models.TrinhDuoc>*@
+
+@{
+    ViewBag.Title = "Danh sách trình dược";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            $scope.maTrinhDuoc = "";
+            $scope.tenTrinhDuoc = "";
+
+            $scope.loadDataModal = function (maTD, tenTrinhDuoc) {
+                $scope.editTrinhDuoc = {};
+                $scope.maTrinhDuoc = maTD;
+                $scope.tenTrinhDuoc = tenTrinhDuoc;
+                $scope.editTrinhDuoc = $scope.model.JtrinhDuoc.find(td => td.MaTD === maTD);
+                $scope.tenQuanHuyen = $scope.editTrinhDuoc.KhuVuc.split("-")[0].toString().trim();
+                $scope.tenTinhThanh = $scope.editTrinhDuoc.KhuVuc.split("-")[1].toString().trim();
+                $scope.$applyAsync();
+            };
+
+            //Xóa trình dược
+            $scope.xoaTrinhDuoc = function () {
+                var index = $scope.model.JtrinhDuoc.findIndex(td => td.maTD === $scope.maTrinhDuoc);
+                $.ajax({
+                    type: "post",
+                    url: "TrinhDuoc/Xoa",
+                    data: { maTrinhDuoc: $scope.maTrinhDuoc },
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            })
+                            $scope.model.JtrinhDuoc.splice(index, 1);
+                            $scope.$applyAsync();
+                        }
+                    }
+                });
+            };
+
+            //Kiểm tra tài khoản trình dược tồn tại chưa
+            $scope.loadDataModalAddAccout = function (maTD, tenTrinhDuoc) {
+                $.ajax({
+                    type: "post",
+                    url: "TrinhDuoc/checkTaiKhoanTrinhDuoc",
+                    data: { maTrinhDuoc: maTD },
+                    success: function (data) {
+                        if (data.success === "success") {
+                            $scope.addAccout = {};
+                            $scope.maTrinhDuoc = maTD;
+                            $scope.tenTrinhDuoc = tenTrinhDuoc;
+                            $("#modal-default").modal();
+
+                            var trinhDuocAddAccout = $scope.model.JtrinhDuoc.find(td => td.MaTD === maTD);
+                            $scope.addAccout.HoTen = trinhDuocAddAccout.HoTen;
+                            $scope.addAccout.SDT = trinhDuocAddAccout.SDT;
+                            $scope.addAccout.MaTD = trinhDuocAddAccout.MaTD;
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg + "<br/><br/><a href='#'>" + data.maTaiKhoan + "</a>","", data.success)
+                        }
+                    }
+                });
+            };
+
+            //Thêm tài khoản cho trinh dược
+            $scope.themTaiKhoan = function () {
+                if ($scope.addAccout.TenTaiKhoan === null || $scope.addAccout.TenTaiKhoan.trim() === "") {
+                    swal("Nhập vào tên tài khoản!", "", "error");
+                }
+                else {
+                    var taiKhoan = JSON.stringify($scope.addAccout);
+                    $.ajax({
+                        type: "post",
+                        url: "TrinhDuoc/themTaiKhoanChoTrinhDuoc",
+                        data: taiKhoan,
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.success === "success") {
+                                swal(data.msg, "", "success");
+                                $("#modal-default").modal("hide");
+                            }
+                            else {
+                                swal(data.msg, "", "error");
+                            }
+
+                        }
+                    });
+                }
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+    @*<script>
+            function loadDataModal(MaTD, tenTrinhDuoc) {
+                document.getElementById("tenTrinhDuoc").innerHTML = tenTrinhDuoc;
+                document.getElementById("maTrinhDuoc").value = MaTD;
+            }
+        </script>*@
+    <script>
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            });
+        });
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Danh sách trình dược
+        </h1>
+        <a href="@Url.Action("Themtrinhduoc", "TrinhDuoc")"><button class="btn btn-primary">Thêm mới</button></a>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <style>
+            .example-modal .modal {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                right: auto;
+                left: auto;
+                display: block;
+                z-index: 1;
+            }
+
+            .example-modal .modal {
+                background: transparent !important;
+            }
+        </style>
+
+
+        @* Edit model *@
+        <div class="modal fade" id="modal-default1">
+            <div class="modal-dialog" style="width: 600px;">
+                <form novalidate>
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Sửa trình dược "{{editTrinhDuoc.HoTen}}"</h3>
+                        </div>
+                        <div class="modal-body">
+                            @*<div class="form-group">
+                                <label for="">Tên tài khoản:</label>
+                                <input class="form-control" ng-model="editAccout.TenTaiKhoan" required />
+                            </div>*@
+                            <div class="form-group">
+                                <label for="">Họ tên:</label>
+                                <input class="form-control" value="{{editTrinhDuoc.HoTen}}" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Số điện thoại:</label>
+                                <input class="form-control" value="{{editTrinhDuoc.SDT}}" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Ngày sinh:</label>
+                                <input type="date" class="form-control" value="{{editTrinhDuoc.NgaySinh}}" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Địa chỉ:</label>
+                                <input class="form-control" value="{{editTrinhDuoc.DiaChi}}" required />
+                            </div>
+                            <div class="box-body">
+                                <div class="form-group" style="width: 48%; float: left;">
+                                    <label for="">Tỉnh thành phố: </label>
+                                    <select style="width: 98%;" id="MaQuanHuyen" name="maTinhThanh" ng-options="item as item.TenTinh for item in model.JtinhThanh" ng-model="col" required>
+                                        <option value="">{{tenTinhThanh}}</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="width: 48%; float: left;">
+                                    <label for="">Quận huyện: </label><br />
+                                    <select style="width: 98%;" id="MaQuanHuyen" name="maQuanHuyen" ng-options="item as item.TenQuanHuyen for item in col.JquanHuyen" ng-model="col1" required>
+                                        <option value="">{{tenQuanHuyen}}</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" ng-click="">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./edit Modal *@
+
+        @* Modal Delete *@
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                @*@using (Html.BeginForm("Xoa", "TrinhDuoc", FormMethod.Post))
+                {*@
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Xác nhận thao tác xóa</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3>Bạn có muốn xóa trình dược: <span>{{tenTrinhDuoc}}</span> ?</h3>
+                        <input type="hidden" name="maTrinhDuoc" value="{{maTrinhDuoc}}" />
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-outline pull-left" data-dismiss="modal" value="Hủy" style="width: 50px;">
+                        <button type="submit" class="btn btn-outline" ng-click="xoaTrinhDuoc()" data-dismiss="modal">Thực hiện xóa</button>
+                    </div>
+                </div>
+                @*}*@
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.delete modal -->
+
+        @* Add Tài khoản cho trình dược model *@
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog" style="width: 600px;">
+                <form>
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Thêm tài khoản "{{addAccout.TenTaiKhoan}}"</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Tên tài khoản:</label>
+                                <input class="form-control" ng-model="addAccout.TenTaiKhoan" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Mật khẩu:</label>
+                                <input class="form-control" ng-model="addAccout.MatKhau" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Email:</label>
+                                <input class="form-control" ng-model="addAccout.Email" required />
+                            </div>
+                            <div class="form-group">
+                                <div style="margin-top: 10px;">
+                                    <div style="width:49%; float: left;">
+                                        <label for="">Nhóm quyền:</label>
+                                        <select class="form-control select2" style="width: 100%" ng-model="addAccout.MaNhomQuyen " ng-options="item1.MaNhomQuyen as item1.TenNhomQuyen for item1 in model.JNhomQuyen" required>
+                                            <option selected="selected" value="">Chọn nhóm quyền</option>
+                                        </select>
+                                    </div>
+                                    @*<div style="width:49%;  float: right;">
+                                        <label for="">Cấp bậc quyền:</label>
+                                        <select class="form-control select2" style="width: 100%;" ng-model="addAccout.MaQuyen">
+                                            <option selected="selected" value="">Chọn bậc quyền</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>*@
+                                </div>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" ng-click="themTaiKhoan()">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./add Tài khoản cho trình dược Modal *@
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<a href="@Url.Action("Themtrinhduoc", "TrinhDuoc")"><button class="btn btn-primary" style="width: 80px;">Thêm mới</button></a>*@
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>ID</th>
+                                    <th>Họ tên</th>
+                                    <th>SĐT</th>
+                                    <th>Ngày sinh</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Khu vực</th>
+                                    <th>Trạng thái</th>
+                                    <th>Đánh giá</th>
+                                    <th>Năng suất</th>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JtrinhDuoc track by item.MaTD">
+                                    <td>{{$index + 1}}</td>
+                                    <td class="col-md-1 col-xs-1"><a href="#">{{item.MaTD}}</a></td>
+                                    <td class="col-md-2 col-xs-2">{{item.HoTen}}</td>
+                                    <td class="col-md-1 col-xs-1">{{item.SDT}}</td>
+                                    <td class="col-md-1 col-xs-1>">{{item.NgaySinh}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.DiaChi}}</td>
+                                    <td class="col-md-1 col-xs-1">{{item.KhuVuc}}</td>
+                                    <td class="col-md-1 col-xs-1">{{item.TrangThai}}</td>
+                                    <td class="col-md-1 col-xs-1>">{{item.DanhGia}}</td>
+                                    <td class="col-md-1 col-xs-1">{{item.LuongTieuThu}}</td>
+                                    <td class="col-md-2 col-sm-1" style="text-align: center;">
+                                        <a href='' title="Tạo tài khoản" ng-click="loadDataModalAddAccout(item.MaTD,item.HoTen)" data-toggle="modal" style="padding: 0px; font-size: 16px;"><i class="fa fa-user-plus"></i></a>
+                                        <a href='' title="Sửa trình dược" ng-click="loadDataModal(item.MaTD,item.HoTen)" data-toggle="modal" data-target="#modal-default1" style="padding: 0px 5px; font-size: 16px;"> <i class="fa fa-pencil"></i></a>
+                                        <a href='' title="Xóa trình dược" ng-click="loadDataModal(item.MaTD,item.HoTen)" data-toggle="modal" data-target="#modal-danger" style="padding: 0px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>

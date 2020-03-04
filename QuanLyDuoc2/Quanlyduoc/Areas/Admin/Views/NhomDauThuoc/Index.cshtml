@@ -1,0 +1,283 @@
+﻿@*@model IEnumerable<Quanlyduoc.Models.NhomDauThuoc>*@
+
+@{
+    ViewBag.Title = "Nhóm đầu thuốc";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/Areas/Admin/Content/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/Content/js/nhomDauThuoc.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            $scope.nhomThuocEdit = {};
+            $scope.maNhomThuoc = "";
+            $scope.tenNhomThuoc = "";
+
+            $scope.loadModel = function (maNhomThuoc, tenNhomThuoc) {
+                $scope.maNhomThuoc = maNhomThuoc;
+                $scope.tenNhomThuoc = tenNhomThuoc;
+                $scope.nhomThuocEdit = $scope.model.JListNDT.find(nt => nt.maNhomThuoc === maNhomThuoc);
+                $scope.$applyAsync();
+            };
+
+            $scope.xoaNhomThuoc = function () {
+                var index = $scope.model.JListNDT.findIndex(ndt => ndt.maNhomThuoc === $scope.maNhomThuoc);
+                $.ajax({
+                    url: "NhomDauThuoc/XoaNhomDau",
+                    type: "post",
+                    data: {
+                        maNhomThuoc: $scope.maNhomThuoc
+                    },
+                    success: function (data) {
+                        if (data.ketqua === true) {
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $scope.maNhomThuoc = "";
+                            $scope.model.JListNDT.splice(index, 1);
+                            $scope.$applyAsync();
+                        }
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Danh sách nhóm đầu thuốc
+        </h1>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#modal-default">Thêm mới</button>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        @* Modal Add *@
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+                @using (Html.BeginForm("ThemNhomDauThuoc", "NhomDauThuoc", FormMethod.Post, new { @enctype = "multipart/form-data", @id = "formNhomDauThuoc" }))
+                {
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Thêm nhóm đầu thuốc</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Tên nhóm:</label>
+                                <input id="tenNhom" class="form-control" name="tenNhomThuoc" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Status:</label>
+                                <input id="moTa" class="form-control" name="status" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Chọn ảnh: </label>
+                                <div class="">
+                                    @* tên của thẻ input trùng vs tham số của controller *@
+                                    <input id="anhNhomDauThuoc" type="file" name="anhNhomDauThuoc">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+                        </div>
+                    </div>
+                }
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./add Modal *@
+
+        @* Modal edit *@
+        <div class="modal fade" id="modal-default1">
+            <div class="modal-dialog">
+                @using (Html.BeginForm("SuaNhomDauThuoc", "NhomDauThuoc", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+                {
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Sửa nhóm đầu thuốc {{nhomThuocEdit.tenNhomThuoc}}</h3>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="maNhomThuoc" value="{{nhomThuocEdit.maNhomThuoc}}" />
+                            <div class="form-group">
+                                <label for="">Tên nhóm:</label>
+                                <input class="form-control" ng-model="nhomThuocEdit.tenNhomThuoc" name="tenNhomDauThuoc" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Status:</label>
+                                <input class="form-control" ng-model="nhomThuocEdit.status" name="status" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Chọn ảnh: </label>
+                                <div class="">
+                                    @* tên của thẻ input trùng vs tham số của controller *@
+                                    <input type="file" name="anhNhomDauThuoc" ng-model="nhomThuocEdit.Image">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+                        </div>
+                    </div>
+                }
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./edit Modal *@
+
+        @* Modal Delete *@
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                @*@using (Html.BeginForm("XoaNhomDau", "NhomDauThuoc", FormMethod.Post))
+                    {*@
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Xác nhận thao tác xóa</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3>Bạn có muốn xóa nhóm đầu thuốc: <span>{{tenNhomThuoc}}</span> ?</h3>
+                        @*<input id="maNhomThuoc" type="hidden" name="maNhomThuoc" />*@
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-outline pull-left" data-dismiss="modal" value="Hủy" style="width: 50px;">
+                        <button type="submit" ng-click="xoaNhomThuoc()" data-dismiss="modal" class="btn btn-outline">Thực hiện xóa</button>
+                    </div>
+                </div>
+                @*}*@
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./delete Modal *@
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px; border: none;" data-toggle="modal" data-target="#modal-default">Thêm mới</button>*@
+                    <span style="color:green;">@ViewBag.Thanhcong</span>
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th class="col-md-1 col-xs-1 col-sm-1">ID</th>
+                                    <th class="col-md-3 col-xs-3 col-sm-3">Nhóm đầu thuốc</th>
+                                    <th class="col-md-7 col-xs-7 col-sm-7">Chi tiết</th>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @*@{
+                                        int i = 1;
+                                    }
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@i</td>
+                                            <td class="col-md-1 col-xs-1 col-sm-1"><a href="#">@Html.DisplayFor(modelItem => item.MaNhomThuoc)</a></td>
+                                            <td class="col-md-3 col-xs-3 col-sm-3">@Html.DisplayFor(modelItem => item.TenNhom)</td>
+                                            <td class="col-md-7 col-xs-7 col-sm-7">@Html.DisplayFor(modelItem => item.Status)</td>
+                                            <td class="col-md-1 col-xs-1 col-sm-1" style="text-align: center;">
+                                                <a href='@Url.Action("suanhomdauthuoc", "NhomDauThuoc", new { MaDT = item.MaNhomThuoc })' style="padding: 0px 5px; font-size: 16px;"> <i class="fa fa-pencil"></i></a>
+                                                <a href="" onclick='loadDataModal("@item.MaNhomThuoc","@item.TenNhom");' data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+                                            </td>
+                                        </tr>
+                                        i++;
+                                    }*@
+                                <tr ng-repeat="item in model.JListNDT track by item.maNhomThuoc">
+                                    <td>{{model.JListNDT.indexOf(item) + 1}}</td>
+                                    <td class="col-md-1 col-xs-1 col-sm-1"><a href="#">{{item.maNhomThuoc}}</a></td>
+                                    <td class="col-md-3 col-xs-3 col-sm-3">{{item.tenNhomThuoc}}</td>
+                                    <td class="col-md-7 col-xs-7 col-sm-7">{{item.status}}</td>
+                                    <td class="col-md-1 col-xs-1 col-sm-1" style="text-align: center;">
+                                        <a href='#' style="padding: 0px 5px; font-size: 16px;" ng-click="loadModel(item.maNhomThuoc, item.tenNhomThuoc)" data-toggle="modal" data-target="#modal-default1"> <i class="fa fa-pencil"></i></a>
+                                        <a href="" ng-click="loadModel(item.maNhomThuoc, item.tenNhomThuoc)" data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+    <script>
+        //function loadDataModal(MaNhomThuoc, TenNhom) {
+        //    document.getElementById("tenNhom").innerHTML = TenNhom;
+        //    document.getElementById("maNhomThuoc").value = MaDT;
+        //}
+    </script>
+    <script>
+        //function loadDataModal(MaDT, tenDauThuoc) {
+        //    document.getElementById("tenDauThuoc").innerHTML = tenDauThuoc;
+        //    document.getElementById("maDauThuoc").value = MaDT;
+        //}
+
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            });
+        });
+    </script>
+</div>

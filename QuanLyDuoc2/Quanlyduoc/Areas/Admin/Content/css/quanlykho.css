@@ -1,0 +1,65 @@
+﻿body {
+}
+
+.content-header {
+    padding-top: 5px;
+}
+
+    .content-header .row {
+        padding: 5px 15px;
+    }
+
+    .content-header h1 {
+        float: left;
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .content-header select {
+        height: 30px;
+    }
+
+    .content-header .btn-primary {
+        width: 80px;
+        border: none;
+        float: right;
+    }
+
+label.error {
+    color: red;
+    font-style: italic;
+}
+
+#quan-ly-kho-header ul li a {
+    color: #000;
+}
+
+.content {
+    padding-top: 8px;
+}
+
+#quan-ly-kho .box-body.start {
+    text-align: center;
+}
+
+#quan-ly-kho .box-body .start {
+    font-size: 400px;
+    color: #afaaaa29;
+}
+
+    #quan-ly-kho .box-body span {
+        font-size: 25px;
+        color: #5d5959;
+    }
+.content-wrapper .content #modal-default .modal-dialog {
+    width: 60%;
+}
+@media (max-width: 767px) {
+    #quan-ly-kho .box-body .start {
+        font-size: 260px;
+    }
+
+    .content-wrapper .content #modal-default .modal-dialog{
+        width: 95%;
+    }
+}

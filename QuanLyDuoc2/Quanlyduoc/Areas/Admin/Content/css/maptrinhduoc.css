@@ -1,0 +1,8 @@
+﻿body {
+}
+.map-name {
+    text-transform: uppercase;
+    color: green;
+    font-weight: 500;
+    font-size: 13px;
+}

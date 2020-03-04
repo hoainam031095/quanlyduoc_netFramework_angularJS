@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "Chi tiết đầu thuốc";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    <link href="~/Content/User/css/linearicons.css" rel="stylesheet" />
+    <link href="~/Content/User/css/magnific-popup.css" rel="stylesheet" />
+    <link href="~/Content/User/css/nice-select.css" rel="stylesheet" />
+    <link href="~/Content/User/css/animate.min.css" rel="stylesheet" />
+    <link href="~/Content/User/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/User/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/Content/User/css/main.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
+    <script src="~/Content/User/js/vendor/bootstrap.min.js"></script>
+    <script src="~/Content/User/js/easing.min.js"></script>
+    <script src="~/Content/User/js/hoverIntent.js"></script>
+    <script src="~/Content/User/js/superfish.min.js"></script>
+    <script src="~/Content/User/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/Content/User/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/Content/User/js/jquery-ui.js"></script>
+    <script src="~/Content/User/js/owl.carousel.min.js"></script>
+    <script src="~/Content/User/js/jquery.nice-select.min.js"></script>
+    <script src="~/Content/User/js/mail-script.js"></script>
+    <script src="~/Content/User/js/main.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+
+            $('#status-thuoc').html($scope.model.JdauThuoc.Status);
+
+            $scope.tuvan = {};
+            $scope.submitThongTin = function() {
+                var tuVan = JSON.stringify($scope.tuvan);
+                $.ajax({
+                    type: "post",
+                    url: "/TuVan/SendInfo",
+                    data: tuVan,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            $scope.tuvan = {};
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+<!-- start banner Area -->
+<section class="banner-area relative about-banner" id="home">
+    <div class="overlay overlay-bg"></div>
+    <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="about-content col-lg-12">
+                <h1 class="text-white">
+                    Chi tiết đầu thuốc
+                </h1>
+                <!-- <p class="text-white link-nav"><a href="index.html">Home </a>  <span class="lnr lnr-arrow-right"></span>  <a href="about.html"> About Us</a></p> -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+<!-- Start feature Area -->
+<section class="feature-area section-gap" style="border-bottom: 1px solid #d0cece;">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Thông tin chi tiết đầu thuốc {{model.JdauThuoc.TenDauThuoc}}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row" style=" padding-top: 25px;">
+            <div class="col-lg-5">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details">
+                        <img src="~/Content/Images/DauThuoc/{{model.JdauThuoc.Image}}" style="max-width: 100%;" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details">
+                        <h5 style="margin: 0px; margin-top: 5px;">Tên đầu thuốc:</h5>
+                        <p>{{model.JdauThuoc.TenDauThuoc}}</p>
+                        <h5 style="margin: 0px; margin-top: 5px;">Nhà sản xuất:</h5>
+                        <p>{{model.JdauThuoc.TenNhaSanXuat}}</p>
+                        <h5 style="margin: 0px; margin-top: 5px;">Công dụng:</h5>
+                        <p>{{model.JdauThuoc.CongDung}}</p>
+                        <h5 style="margin: 0px; margin-top: 5px;">Cách dùng:</h5>
+                        <p>{{model.JdauThuoc.CachDung}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details">
+                        <h3 style="margin: 0px; margin-top: 5px; text-transform:uppercase;">Thông tin chi tiết:</h3>
+                        <div id="status-thuoc">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End feature Area -->
+

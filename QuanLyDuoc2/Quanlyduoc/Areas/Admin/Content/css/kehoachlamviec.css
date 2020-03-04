@@ -1,0 +1,31 @@
+﻿body {
+}
+
+.content .danhsach {
+    padding: 0px;
+    padding-right: 3px;
+}
+
+.content .box-body.nhanvien {
+    padding-top: 17px;
+    border: 2px solid #d2d6de;
+}
+
+    .content .box-body.nhanvien td {
+        border: 1px solid #d2d6de;
+    }
+
+.content .nhanvien img {
+    border-radius: 50%;
+    width: 33px;
+    margin-right: 10px;
+}
+
+.content .modal-dialog {
+    width: 50%;
+}
+@media (max-width: 767px) {
+    .content .modal-dialog {
+        width: 95%;
+    }
+}

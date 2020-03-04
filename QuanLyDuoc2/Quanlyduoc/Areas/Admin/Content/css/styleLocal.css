@@ -1,0 +1,22 @@
+﻿body {
+}
+.content-header h1 {
+    width: 50%;
+    float: left;
+}
+.content-header .btn-primary {
+    width: 80px;
+    border: none;
+    float: right;
+    margin-bottom: 7px;
+}
+label.error {
+    color: red;
+    font-style: italic;
+}
+@media (max-width: 767px) {
+    .content-header h1{
+        width: 65%;
+        font-size: 20px;
+    }
+}

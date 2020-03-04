@@ -1,0 +1,325 @@
+﻿
+@{
+    ViewBag.Title = "Các nhóm quyền";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+    <link href="~/Areas/Admin/Content/css/quanlynhomquyen.css" rel="stylesheet" />
+    <link href="~/Content/Admin/plugins/iCheck/all.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="~/Content/Admin/plugins/iCheck/icheck.min.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            $scope.maNhomQuyen = "";
+            $scope.tenNhomQuyen = "";
+            $scope.model.JModul = {};
+            $scope.model.JAction = {};
+
+            //get ma
+            $scope.getMa = function (maNhomQuyen, tenNhomQuyen) {
+                $scope.maNhomQuyen = maNhomQuyen;
+                $scope.tenNhomQuyen = tenNhomQuyen;
+                $scope.$applyAsync();
+            };
+
+            //cài đặt quyền
+            $scope.caiDatQuyen = function (maNhomQuyen, tenNhomQuyen) {
+                $scope.maNhomQuyen = maNhomQuyen;
+                $scope.tenNhomQuyen = tenNhomQuyen;
+                $.ajax({
+                    type: "post",
+                    url: "NhomQuyen/caiDatQuyen",
+                    data: { maNhomQuyen: maNhomQuyen },
+                    success: function (data) {
+                        $scope.model.JModul = data.JModul;
+                        $scope.model.JAction = data.JAction;
+                        $scope.$applyAsync();
+                    }
+                });
+            };
+
+            //lưu cài đặt
+            $scope.luuCaiDatQuyen = function () {
+                //var JModul = JSON.stringify($scope.model.JModul);
+                var maNhomQuyen = $scope.maNhomQuyen;
+                var data = JSON.stringify({
+                    "data": {
+                        "JModul": $scope.model.JModul,
+                        "maNhomQuyen": maNhomQuyen
+                    }
+                });
+                $.ajax({
+                    type: "post",
+                    url: "NhomQuyen/luuCaiDatQuyen",
+                    data: data,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+
+                    }
+                });
+            };
+
+            //xóa nhóm quyền
+            $scope.xoaNhomQuyen = function () {
+                var maNhomQuyen = $scope.maNhomQuyen;
+                var index = $scope.model.JNhomQuyen.findIndex(nq => nq.maNhomQuyen === maNhomQuyen);
+                $.ajax({
+                    type: "post",
+                    url: "NhomQuyen/xoaNhomQuyen",
+                    data: {
+                        maNhomQuyen: maNhomQuyen
+                    },
+                    success: function (data) {
+                        if (data.success === "success") {
+                            $scope.model.JNhomQuyen.splice(index, 1);
+                            $scope.$applyAsync();
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            })
+                        }
+                        else {
+                            swal(data.msg, "", data.success);
+                        }
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+    @*<script>
+
+            $(function () {
+                $('#example1').DataTable()
+                $('#example2').DataTable({
+                    'paging': true,
+                    'lengthChange': false,
+                    'searching': false,
+                    'ordering': true,
+                    'info': true,
+                    'autoWidth': false,
+                    'destroy': true
+                });
+            });
+        </script>*@
+    <script>
+        //Flat red color scheme for iCheck
+        $(document).ready(function () {
+            $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+                checkboxClass: 'icheckbox_flat-green',
+                radioClass: 'iradio_flat-green'
+            });
+        });
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Danh sách nhóm quyền
+        </h1>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#modal-default-them">Thêm mới</button>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        @* Modal Add *@
+        <div class="modal fade" id="modal-default-them">
+            <div class="modal-dialog">
+                @using (Html.BeginForm("ThemNhomQuyen", "NhomQuyen", FormMethod.Post))
+                {
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Thêm nhóm quyền</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Tên nhóm quyền:</label>
+                                <input class="form-control" name="tenNhomQuyen" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Mô tả nhóm:</label>
+                                <input class="form-control" name="moTaNhom" />
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Thêm</button>
+                        </div>
+                    </div>
+                }
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./add Modal *@
+
+        @* Edit model *@
+        <div class="modal fade" id="modal-default-edit">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title">Quản lý quyền nhóm " {{tenNhomQuyen}} "</h3>
+                    </div>
+                    <div class="modal-body">
+                        <h4>
+                            Các quyền hiện có ( {{(model.JAction | filter: {Checked: true}).length }}/{{(model.JAction).length}} )
+                        </h4>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <div class="box">
+                                    <!-- /.box-header -->
+                                    <div class="box-body">
+                                        <ul class="sidebar-menu" data-widget="tree">
+                                            <li class="treeview" ng-repeat="item in model.JModul">
+                                                <a href="#">
+                                                    <span>{{item.Name === null ? item.Controller: item.Name}} ( {{(item.ListAction | filter: {Checked: true}).length}}/{{item.ListAction.length}} )</span>
+                                                    <span class="pull-right-container">
+                                                        <i class="fa fa-angle-left pull-right"></i>
+                                                    </span>
+                                                </a>
+                                                <div class="treeview-menu">
+                                                    <ul style="list-style-type: none;">
+                                                        <li ng-repeat="item1 in item.ListAction">
+                                                            <input type="checkbox" ng-model="item1.Checked" class="flat-red" />
+                                                            {{item1.Name === null ? item1.Action: item1.Name}}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- /.box-body -->
+                                </div>
+                                <!-- /.box -->
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger pull-left" data-dismiss="modal">Close</button>
+                        <button type="button" ng-click="luuCaiDatQuyen()" class="btn btn-primary pull-right" data-dismiss="modal">Lưu</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./Edit Modal *@
+
+        @* Modal Delete *@
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                @*@using (Html.BeginForm("Xoa", "HoaDon", FormMethod.Post))
+                    {*@
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Xác nhận thao tác xóa</h4>
+                    </div>
+                    <div class="modal-body">
+                        <h3>Bạn có muốn xóa nhóm quyền {{tenNhomQuyen}} ?</h3>
+                        <input id="" type="hidden" name="maNhomQuyen" />
+                    </div>
+                    <div class="modal-footer">
+                        <input class="btn btn-outline pull-left" data-dismiss="modal" value="Hủy" style="width: 50px;">
+                        <button ng-click="xoaNhomQuyen()" data-dismiss="modal" class="btn btn-outline">Thực hiện xóa</button>
+                    </div>
+                </div>
+                @*}*@
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* end model Delete *@
+
+
+        @*Main list*@
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px; margin-bottom: 30px;" data-toggle="modal" data-target="#modal-default-them">Thêm mới</button>*@
+                    <span style="color:green;">@ViewBag.Thanhcong</span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th class="col-md-3 col-xs-3 col-sm-3">Tên nhóm quyền</th>
+                                    <th class="col-md-7 col-xs-7 col-sm-7">Mô tả</th>
+                                    <th class="col-md-2 col-xs-2 col-sm-2" style="text-align: center;">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JNhomQuyen track by item.maNhomQuyen">
+                                    <td>{{model.JNhomQuyen.indexOf(item) + 1}}</td>
+                                    <td class="col-md-3 col-xs-3 col-sm-3">{{item.tenNhomQuyen}}</td>
+                                    <td class="col-md-7 col-xs-7 col-sm-7">{{item.moTa}}</td>
+                                    <td class="col-md-2 col-xs-2 col-sm-2" style="text-align: center;">
+                                        <a href='#' style="padding: 0px 5px; font-size: 16px;" title="Chỉnh sửa"> <i class="fa fa-pencil"></i></a>
+                                        <a href='#' style="padding: 0px 5px; font-size: 16px; color: #800909;" title="Cài đặt quyền" ng-click="caiDatQuyen(item.maNhomQuyen, item.tenNhomQuyen)" data-toggle="modal" data-target="#modal-default-edit"> <i class="fa fa-cogs" aria-hidden="true"></i></a>
+                                        <a href="" style="padding: 0px 5px; font-size: 17px; color: red;" title="Xóa nhóm quyền" ng-click="getMa(item.maNhomQuyen, item.tenNhomQuyen)" data-toggle="modal" data-target="#modal-danger"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>

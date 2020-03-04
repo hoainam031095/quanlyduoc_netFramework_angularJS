@@ -1,0 +1,50 @@
+﻿body {
+}
+
+#modal-default-edit .modal-dialog {
+    width: 90%;
+}
+
+#modal-default-edit .sidebar-menu.tree .treeview {
+    border: 1px solid #d2d6de;
+    margin-bottom: 1px;
+}
+
+    #modal-default-edit .sidebar-menu.tree .treeview:hover {
+        border: 1px solid #367fa9;
+    }
+
+#modal-default-edit .treeview-menu ul {
+    padding: 5px 0px;
+    padding-left: 36px;
+}
+
+#modal-default-edit .treeview-menu li {
+    list-style-type: none;
+    display: inline-block;
+    padding: inherit;
+}
+
+#modal-default-edit .treeview-menu .icheckbox_flat-green {
+    margin-left: 40px;
+    margin-right: 5px;
+}
+
+@media (max-width: 767px) {
+    #modal-default-edit .modal-dialog {
+        width: 94%;
+    }
+    #modal-default-edit .treeview-menu ul {
+        padding-left: 0px;
+        overflow: scroll;
+    }
+    #modal-default-edit .treeview-menu li {
+        padding-left: 10px;
+    }
+    #modal-default-edit .modal-dialog .box-body{
+        padding: 10px 0px;
+    }
+    #modal-default-edit .modal-body{
+        padding: 15px 5px;
+    }
+}

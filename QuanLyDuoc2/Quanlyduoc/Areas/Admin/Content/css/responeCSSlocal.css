@@ -1,0 +1,8 @@
+﻿@media screen and (max-width: 800px) {
+    #example2, #example1_wrapper, #example2_wrapper, #example3_wrapper, #example4_wrapper, #example5_wrapper {
+        overflow-x: scroll;
+    }
+    .tableResponeScoll {
+        overflow-x: scroll;
+    }
+}

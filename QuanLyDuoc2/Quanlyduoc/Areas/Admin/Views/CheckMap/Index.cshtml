@@ -1,0 +1,265 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            //$scope.maCongTy = "";
+            $scope.toaDo1 = "";
+            $scope.toaDo2 = "";
+            $scope.toaDo3 = "";
+            $scope.toaDo4 = "";
+
+            // Check tọa độ của công ty
+           
+            function info1(index) {
+                // Try HTML5 geolocation.
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function (position) {
+                        var pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        if (index === 1) {
+                            $scope.toaDo1 = pos.lat + " , " + pos.lng;
+                        }
+                        else {
+                            if (index === 2) {
+                                $scope.toaDo2 = pos.lat + " , " + pos.lng;
+                            }
+                            else {
+                                if (index === 3) {
+                                    $scope.toaDo3 = pos.lat + " , " + pos.lng;
+                                }
+                                else{
+                                    $scope.toaDo4 = pos.lat + " , " + pos.lng;
+                                }
+                            }
+                        }
+
+                        $scope.$applyAsync();
+
+                    }, function () {
+                        //handleLocationError(true, infoWindow, map.getCenter());
+                    });
+                } else {
+                    // Browser doesn't support Geolocation
+                    //handleLocationError(false, infoWindow, map.getCenter());
+                    alert("Lỗi!");
+                }
+            }
+
+            $scope.getToaDo1 = function () {
+                info1(1);
+            };
+            $scope.getToaDo2 = function () {
+                info1(2);
+            };
+            $scope.getToaDo3 = function () {
+                info1(3);
+            };
+            $scope.getToaDo4 = function () {
+                info1(4);
+            };
+
+
+            // Kiểm tra các điểm của công ty
+            $scope.paint = function () {
+                var td1 = $scope.toaDo1;
+                var td2 = $scope.toaDo2;
+                var td3 = $scope.toaDo3;
+                var td4 = $scope.toaDo4;
+                //reset map
+                if ($("#box-body-map").html != "") {
+                    $("#box-body-map").html("");
+                }
+                $("#box-body-map").html('<div id="map"></div>');
+                //Vẽ map
+                var mymap = L.map('map').setView([td1.split(',')[0], td1.split(',')[1]], 15);
+                L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                    maxZoom: 25,
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+                        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    id: 'mapbox.streets'
+                }).addTo(mymap);
+
+                var polygon = L.polygon([
+                    [td1.split(',')[0], td1.split(',')[1]],
+                    [td2.split(',')[0], td2.split(',')[1]],
+                    [td3.split(',')[0], td3.split(',')[1]],
+                    [td4.split(',')[0], td4.split(',')[1]]
+                ]).addTo(mymap);
+                //var mymap = L.map('map').setView([20.986940, 105.836520], 13);
+            };
+
+            //Chọn công ty
+            $scope.chonCongTy = function () {
+                if ($scope.maCongTy === null) {
+                }
+                else {
+                    var cty = $scope.model.JListCty.find(ct => ct.MaCongTy === $scope.maCongTy);
+                    $scope.toaDo1 = cty.ToaDo1;
+                    $scope.toaDo2 = cty.ToaDo2;
+                    $scope.toaDo3 = cty.ToaDo3;
+                    $scope.toaDo4 = cty.ToaDo4;
+                    if (cty.ToaDo1 === null || cty.ToaDo2 == null || cty.ToaDo3 == null || cty.ToaDo4 == null) {
+                        alert("Tọa độ còn thiếu");
+                        if ($("#box-body-map").html != "") {
+                            $("#box-body-map").html("");
+                        }
+                    }
+                    else {
+                        $scope.paint();
+                    }
+                }
+            };
+
+            //Lưu tọa độ
+            $scope.luuToaDo = function () {
+                if ($scope.maCongTy === null || $scope.maCongTy === undefined) {
+                    alert("Chưa chọn công ty!");
+                }
+                else {
+                    var cty1 = angular.copy($scope.model.JListCty.find(ct => ct.MaCongTy === $scope.maCongTy));
+                    var cty2 = $scope.model.JListCty.find(ct => ct.MaCongTy === $scope.maCongTy);
+                    $.ajax({
+                        type: "post",
+                        url: "CheckMap/luuToaDoCongTy",
+                        data: {
+                            toaDo1: $scope.toaDo1,
+                            toaDo2: $scope.toaDo2,
+                            toaDo3: $scope.toaDo3,
+                            toaDo4: $scope.toaDo4,
+                            maCongTy: $scope.maCongTy
+                        },
+                        success: function (data) {
+                            if (data.success === "success") {
+                                swal({
+                                    type: data.success,
+                                    title: data.msg,
+                                    showConfirmButton: true,
+                                    timer: 1500
+                                });
+                                cty1.ToaDo1 = $scope.toaDo1;
+                                cty1.ToaDo2 = $scope.toaDo2;
+                                cty1.ToaDo3 = $scope.toaDo3;
+                                cty1.ToaDo4 = $scope.toaDo4;
+                                angular.extend(cty2, cty1);
+                                $scope.$applyAsync();
+                            }
+                            else {
+                                swal(data.msg, "", "error");
+                            }
+                        }
+                    });
+                }
+            };
+
+    scope = $scope;
+}]);
+    </script>
+}
+<div class="content-wrapper">
+    <style>
+        /* Always set the map height explicitly to define the size of the div
+            * element that contains the map. */
+        #map {
+            min-height: 492px;
+        }
+        /* Optional: Makes the sample page fill the window. */
+    </style>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12 col-md-5">
+                <!-- general form elements -->
+                <div class="box box-primary" style="padding: 20px 30px;">
+                    <div style="width: 100%; margin-bottom: 5px;">
+                        <select style="width: 50%;" ng-change="chonCongTy()" ng-options="item.MaCongTy as item.TenCongTy for item in model.JListCty" ng-model="maCongTy">
+                            <option selected="selected" value="">-- Chọn công ty --</option>
+                        </select>
+                    </div>
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Cài đặt tọa độ công ty</h3>
+                        <br /><span style="color:red;"><small>(Chú ý: Di chuyển đến các góc của công ty để tạo thành hình đa giác. Nhân viên sẽ chấm công trong phạm vi này!)</small></span>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    <form>
+                        <div class="box-body ">
+                            <div class="form-group">
+                                <label>Tọa độ 1: </label><button style="float: right;" ng-click="getToaDo1()">Check</button>
+                                <input ng-model="toaDo1" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Tọa độ 2: </label><button style="float: right;" ng-click="getToaDo2()">Check</button>
+                                <input ng-model="toaDo2" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Tọa độ 3: </label><button style="float: right;" ng-click="getToaDo3()">Check</button>
+                                <input ng-model="toaDo3" class="form-control" />
+
+                            </div>
+                            <div class="form-group">
+                                <label for="">Tọa độ 4: </label><button style="float: right;" ng-click="getToaDo4()">Check</button>
+                                <input ng-model="toaDo4" class="form-control" />
+
+                            </div>
+                            <button class="btn btn-info" style="margin-right:10px;" ng-click="paint()">Kiểm tra</button>
+                            <button type="submit" class="btn btn-primary" ng-click="luuToaDo()">Lưu cài đặt</button>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+
+                        </div>
+                    </form>
+                </div>
+                <!-- /.box -->
+            </div>
+
+            <div class="col-xs-12 col-md-7">
+                <div class="box-body" id="box-body-map">
+                    
+                </div>
+            </div>
+
+            <!-- /.col -->
+
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+

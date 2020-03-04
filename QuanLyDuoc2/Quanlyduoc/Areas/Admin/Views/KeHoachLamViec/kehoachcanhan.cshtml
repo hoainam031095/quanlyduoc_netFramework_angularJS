@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewBag.Title = "kehoachcanhan";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/kehoachlamviec.css" rel="stylesheet" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+
+            $scope.hoanThanhCongViec = function (maCongViec) {
+                $.ajax({
+                    type: "post",
+                    url: "/KeHoachLamViec/hoanThanhCongViec",
+                    data: { maCongViec: maCongViec },
+                    success: function (data) {
+                        var congViec = $scope.model.JCongViec.find(cv => cv.ID === maCongViec);
+                        var congViec2 = $scope.model.JCongViec.find(cv => cv.ID === maCongViec);
+                        if (data.tt === 0) {
+
+                        }
+                        else {
+                            if (data.tt == 1) {
+                                congViec2.TrangThai1 = 1;
+                                angular.extend(congViec, congViec2);
+                                $scope.$applyAsync();
+                            }
+                            else {
+                                congViec2.TrangThai1 = 2;
+                                angular.extend(congViec, congViec2);
+                                $scope.$applyAsync();
+                            }
+                        }
+                    }
+                });
+            };
+
+
+            scope = $scope;
+        }]);
+    </script>
+    <script>
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false
+            })
+        })
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Kế hoạch làm việc cá nhân
+        </h1>
+        @*<button class="btn btn-primary" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem()">Thêm mới</button>*@
+    </section>
+
+    <!-- Main content -->
+    <div style="clear:both;"></div>
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12" style="padding: 0px;">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px;" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem()">Thêm mới</button>*@
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Công việc</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hoàn thành</th>
+                                    <th>Ghi chú</th>
+                                    @*<td></td>*@
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JCongViec track by item.ID">
+                                    <td>{{model.JCongViec.indexOf(item) + 1}}</td>
+                                    <td class="col-md-5 col-xs-5">{{item.CongViec}}</td>
+                                    <td class="col-md-3 col-xs-3"><a href="#" ng-click="hoanThanhCongViec(item.ID)">{{item.TrangThai1 == 1 ? "Đang thực hiện":"Hoàn thành"}}</a></td>
+                                    <td class="col-md-2 col-xs-2">{{item.TrangThai2 == 1 ? "Chưa hoàn thành":"Hoàn thành"}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.GhiChu}}</td>
+                                    @*<td class="col-md-1 col-sm-1" style="text-align: center;">
+            <a href='' ng-click="" data-toggle="modal" data-target="#modal-default1" style="padding: 0px 5px; font-size: 16px;"> <i class="fa fa-pencil"></i></a>
+            <a href='' ng-click="" data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+        </td>*@
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>
+

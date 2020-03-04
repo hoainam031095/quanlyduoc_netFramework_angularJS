@@ -1,0 +1,388 @@
+﻿@*@model IEnumerable<Quanlyduoc.Models.TaiKhoan>*@
+@{
+    ViewBag.Title = "Danh sách tài khoản";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <link href="~/Areas/Admin/Content/css/taikhoan.css" rel="stylesheet" />
+
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.accout = @Html.Raw(Json.Encode(Model.Data));
+            $scope.editAccout = "";
+            $scope.tenTaiKhoan = "";
+            $scope.maTaiKhoan = "";
+
+            //Thêm tài khoản
+            $scope.taoFormThem = function () {
+                $scope.addAccout = {};
+            };
+            $scope.themTaiKhoan = function () {
+                var taiKhoan = JSON.stringify($scope.addAccout);
+                $scope.addAccout.TenNhomQuyen = $scope.accout.JNhomQuyen.find(nq => nq.MaNhomQuyen === $scope.addAccout.MaNhomQuyen).TenNhomQuyen;
+                $scope.$applyAsync();
+                $.ajax({
+                    type: "post",
+                    url: "Account/themTaiKhoan",
+                    data: taiKhoan,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            $scope.addAccout.MaTK = data.MaTK;
+                            $scope.accout.JAccout.push($scope.addAccout);
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+
+                    }
+                });
+            };
+
+            //Sửa tài khoản
+            $scope.suaTaiKhoan = function (maTaiKhoan, tenTaiKhoan) {
+                $scope.tenTaiKhoan = tenTaiKhoan;
+                $scope.editAccout = angular.copy($scope.accout.JAccout.find(x => x.MaTK === maTaiKhoan));
+            };
+            $scope.luuTaiKhoan = function () {
+                var taiKhoan = JSON.stringify($scope.editAccout);
+                $scope.editAccout.TenNhomQuyen = $scope.accout.JNhomQuyen.find(nq => nq.MaNhomQuyen === $scope.editAccout.MaNhomQuyen).TenNhomQuyen;
+                var taiKhoanUpdate = $scope.accout.JAccout.find(x => x.MaTK === $scope.editAccout.MaTK);
+                $.ajax({
+                    type: "post",
+                    url: "Account/suaTaiKhoan",
+                    data: taiKhoan,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            angular.extend(taiKhoanUpdate, $scope.editAccout);
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+                    }
+                });
+            };
+
+            //Xóa tài khoản
+            $scope.xoaTaiKhoan = function () {
+                var index = $scope.accout.JAccout.findIndex(tk => tk.MaTK == $scope.maTaiKhoan);
+                $.ajax({
+                    type: "post",
+                    url: "Account/xoaTaiKhoan",
+                    data: {
+                        MaTK: $scope.maTaiKhoan
+                    },
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $scope.accout.JAccout.splice(index, 1);
+                        }
+                        $scope.$applyAsync();
+                    }
+                });
+            };
+            $scope.loadMaTaiKhoan = function (maTaiKhoan, tenTaiKhoan) {
+                $scope.maTaiKhoan = maTaiKhoan;
+                $scope.tenTaiKhoan = tenTaiKhoan;
+                $scope.$applyAsync();
+            };
+
+            //Phân trang
+            $scope.curentPage = 1;//
+            $scope.loadData = function () {
+                $scope.pageSize = 10;
+                return loadData1($scope.accout.JAccout, $scope.pageSize);
+            }
+            function loadData1(listPaging, pageSize) {
+                $scope.pageNumber = Math.ceil(listPaging.length / pageSize);
+
+                if ($scope.pageNumber <= 10) {
+                    $scope.startPage = 1;
+                    $scope.endPage = $scope.pageNumber;
+                }
+                else {
+                    if ($scope.curentPage <= 6) {
+                        $scope.startPage = 1;
+                        $scope.endPage = 10;
+                    } else if ($scope.curentPage + 4 >= $scope.pageNumber) {
+                        $scope.startPage = $scope.pageNumber - 9;
+                        $scope.endPage = $scope.pageNumber;
+                    } else {
+                        $scope.startPage = $scope.curentPage - 5;
+                        $scope.endPage = $scope.curentPage + 4;
+                    }
+                }
+
+                //Phạm vi hiện thị của list trang
+                $scope.arrayPage = [];
+                for (var i = 1; i <= $scope.pageNumber; i++) {
+                    $scope.arrayPage.push(i);
+                }
+                $scope.listIndexPage = $scope.arrayPage.slice($scope.startPage - 1, $scope.endPage);
+
+
+                if ($scope.curentPage > $scope.pageNumber)
+                    $scope.curentPage = 1;
+
+                return listPaging.filter(function (x, i) {
+                    var rt = false;
+                    if ((i >= (pageSize * ($scope.curentPage - 1))) && (i < (pageSize * ($scope.curentPage - 1)) + pageSize))
+                        rt = true;
+                    return rt;
+                });
+            };
+            //chọn trang
+            $scope.changePage = function (pageno) {
+                if (pageno < 1 || pageno > $scope.pageNumber) return;
+                $scope.curentPage = pageno;
+                $scope.$applyAsync();
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Danh sách người dùng
+        </h1>
+        <button class="btn btn-primary" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem()">Thêm mới</button>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+
+        @* Add model *@
+        <div class="modal fade" id="modal-default">
+            <div class="modal-dialog">
+                <form>
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Thêm tài khoản "{{addAccout.TenTaiKhoan}}"</h3>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="">Tên tài khoản:</label>
+                                <input class="form-control" ng-model="addAccout.TenTaiKhoan" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Mật khẩu:</label>
+                                <input class="form-control" ng-model="addAccout.MatKhau" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Họ tên:</label>
+                                <input class="form-control" ng-model="addAccout.HoTen" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Số điện thoại:</label>
+                                <input class="form-control" ng-model="addAccout.SDT" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Email:</label>
+                                <input class="form-control" ng-model="addAccout.Email" required />
+                            </div>
+                            @*<div class="form-group">
+                                    <label for="">Nhóm quyền:</label>
+                                    <select class="form-control select2" style="width: 50%" ng-model="addAccout.MaNhomQuyen " ng-options="item1.MaNhomQuyen as item1.TenNhomQuyen for item1 in accout.JNhomQuyen" required>
+                                        <option selected="selected" value="">Chọn nhóm quyền</option>
+                                    </select>
+                                </div>*@
+                            <div class="form-group">
+                                <div style="margin-top: 10px;">
+                                    <div style="width:49%; float: left;">
+                                        <label for="">Nhóm quyền:</label>
+                                        <select class="form-control select2" style="width: 100%" ng-model="addAccout.MaNhomQuyen " ng-options="item1.MaNhomQuyen as item1.TenNhomQuyen for item1 in accout.JNhomQuyen" required>
+                                            <option selected="selected" value="">Chọn nhóm quyền</option>
+                                        </select>
+                                    </div>
+                                    <div style="width:49%;  float: right;">
+                                        <label for="">Cấp bậc quyền:</label>
+                                        <select class="form-control select2" style="width: 100%;" ng-model="addAccout.MaQuyen">
+                                            <option selected="selected" value="">Chọn bậc quyền</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="clear: both;"></div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" ng-click="themTaiKhoan()">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./add Modal *@
+
+        @* Edit model *@
+        <div class="modal fade" id="modal-default1">
+            <div class="modal-dialog">
+                <form novalidate>
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h3 class="modal-title">Sửa tài khoản "{{tenTaiKhoan}}"</h3>
+                        </div>
+                        <div class="modal-body">
+                            @*<div class="form-group">
+                                    <label for="">Tên tài khoản:</label>
+                                    <input class="form-control" ng-model="editAccout.TenTaiKhoan" required />
+                                </div>*@
+                            <div class="form-group">
+                                <label for="">Họ tên:</label>
+                                <input class="form-control" ng-model="editAccout.HoTen" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="">Số điện thoại:</label>
+                                <input class="form-control" ng-model="editAccout.SDT" required />
+                            </div>
+                            @*<div class="form-group">
+                                    <label for="">Email:</label>
+                                    <input class="form-control" ng-model="editAccout.Email" required />
+                                </div>*@
+                            <div class="form-group">
+                                <label for="">Nhóm quyền:</label>
+                                <select class="form-control select2" style="width: 50%" ng-model="editAccout.MaNhomQuyen " ng-options="item1.MaNhomQuyen as item1.TenNhomQuyen for item1 in accout.JNhomQuyen"></select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Đóng</button>
+                            <button type="submit" class="btn btn-primary" ng-click="luuTaiKhoan()">Lưu</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        @* ./edit Modal *@
+
+        @* Modal Delete *@
+        <div class="modal modal-danger fade" id="modal-danger">
+            <div class="modal-dialog">
+                <form>
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Xác nhận thao tác xóa</h4>
+                        </div>
+                        <div class="modal-body">
+                            <h3>Bạn có muốn xóa tài khoản: <span>{{tenTaiKhoan}}</span> ?</h3>
+                        </div>
+                        <div class="modal-footer">
+                            <input class="btn btn-outline pull-left" data-dismiss="modal" value="Hủy" style="width: 50px;">
+                            <button type="submit" class="btn btn-outline" ng-click="xoaTaiKhoan()" data-dismiss="modal">Thực hiện xóa</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px;" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem()">Thêm mới</button>*@
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        @*<table id="example2" class="table table-bordered table-hover">*@
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tài khoản</th>
+                                    <th>Họ và tên</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Email</th>
+                                    <th>Nhóm quyền</th>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in loadData()">
+                                    <td class="col-md-1 col-xs-1"><a href="#">{{item.MaTK}}</a></td>
+                                    <td class="col-md-2 col-xs-2">{{item.TenTaiKhoan}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.HoTen}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.SDT}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.Email}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.TenNhomQuyen}}</td>
+                                    <td class="col-md-1 col-sm-1" style="text-align: center;">
+                                        <a href='' ng-click="suaTaiKhoan(item.MaTK, item.HoTen)" data-toggle="modal" data-target="#modal-default1" style="padding: 0px 5px; font-size: 16px;"> <i class="fa fa-pencil"></i></a>
+                                        <a href='' ng-click="loadMaTaiKhoan(item.MaTK, item.HoTen)" data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: red;"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        @Html.Partial("~/Areas/Admin/Views/Partial/MenuPaging.cshtml")
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>

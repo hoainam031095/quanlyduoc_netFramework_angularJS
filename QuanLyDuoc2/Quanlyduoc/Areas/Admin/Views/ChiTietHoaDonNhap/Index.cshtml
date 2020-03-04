@@ -1,0 +1,128 @@
+﻿@*@model IEnumerable<Quanlyduoc.Models.ChiTietHoaDonNhap>*@
+
+@{
+                /**/
+
+                ViewBag.Title = "Index";
+                Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model =@Html.Raw(Json.Encode(Model.Data));
+            $scope.tongtien = 0;
+            for (let item of $scope.model.ct) {
+                $scope.tongtien = $scope.tongtien + item.DonGia;
+            }
+            $scope.$applyAsync();
+            scope = $scope;
+        }]);
+    </script>
+    <script>
+        $(function () {
+            $("#example2").DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false,
+                'destroy': true
+            });
+        });
+    </script>
+}
+
+<style>
+    .content .row-header table {
+        font-size: 16px;
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+        .content .row-header table tr {
+            line-height: 1.6;
+        }
+
+    .content .row-header .text-bold {
+        font-weight: 600;
+    }
+
+    .content .row-header table td {
+        width: 150px;
+        font-style: italic;
+    }
+</style>
+<div class="content-wrapper">
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>Chi Tiết Hóa Đơn Nhập</h2>
+                <div class="row-header">
+                    <table>
+                        <tr>
+                            <td class="text-bold">Mã Hóa Đơn: </td>
+                            <td>{{model.JHoaDonNhap.MaHD}}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-bold">Tên Khách Hàng: </td>
+                            <td>{{model.JHoaDonNhap.hoTen}}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-bold">Ngày Nhập:</td>
+                            <td>{{model.JHoaDonNhap.ngaynhap }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-body">
+                            <table id="example2" class="table table-hover table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Hoa Don</th>
+                                        <th>Tên Thuốc</th>
+                                        <th>Số Lượng</th>
+                                        <th>Đơn Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in model.ct ">
+                                        <td>{{model.ct.indexOf(item)+1}}</td>
+                                        <td>{{item.MaHD}}</td>
+                                        <td>{{item.TenDT}}</td>
+                                        <td>{{item.SoLuong}}</td>
+                                        <td>{{item.DonGia}}</td>
+                                    </tr>
+                                    
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>Tong Tien:{{tongtien}}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

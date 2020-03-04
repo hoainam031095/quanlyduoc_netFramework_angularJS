@@ -1,0 +1,293 @@
+﻿@model Quanlyduoc.Models.DonDatHangModels
+
+@{
+    ViewBag.Title = "Thêm hóa đơn";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <link href="~/Areas/Admin/Content/css/themHoaDon.css" rel="stylesheet" />
+}
+@section scripts{
+    <script src="~/Areas/Admin/Content/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/Content/js/themhoadon.js"></script>
+    <script type="text/javascript">
+        var scope;
+        myApp.controller('global', ['$scope', function ($scope) {
+
+            $scope.NhomDauThuoc = @Html.Raw(Json.Encode(ViewBag.NhomDauThuoc));
+            $scope.KhachHang = @Html.Raw(Json.Encode(ViewBag.KhachHang));
+
+            $scope.hoadon = {
+                maHoaDon: "@ViewBag.maHoaDon",
+                ngayMua: new Date("@ViewBag.ngayMua"),
+                danhsachchon: [],
+            };
+
+            //Thêm vào danh sách mua
+            $scope.add = function () {
+                $scope.thuoc.donGia = 0;
+                if ($scope.thuoc.MaDT != null && $scope.thuoc.MaDT != "" && $scope.thuoc.Donvi.ID != "" && $scope.thuoc.soLuong > 0) {
+
+                    //Tính đơn giá
+                    if ($scope.thuoc.JDonVi[$scope.thuoc.JDonVi.length - 1].ID === $scope.thuoc.Donvi.ID) {
+                        $scope.thuoc.donGia = $scope.thuoc.GiaBanLe * $scope.thuoc.soLuong;
+                    }
+                    else {
+                        var ID = "";
+                        //Tính hệ số
+                        var heso = 1;
+                        var i = $scope.thuoc.JDonVi.length - 1;
+                        do {
+                            ID = $scope.thuoc.JDonVi[i].IDParent;
+                            heso = heso * $scope.thuoc.JDonVi[i].Heso;
+                            i--;
+                        }
+                        while (ID != $scope.thuoc.Donvi.ID)
+                        $scope.thuoc.donGia = $scope.thuoc.GiaBanLe * heso * $scope.thuoc.soLuong;
+                    }
+
+                    //kiểm tra tồn tại để thêm vào hoặc cộng số lượng
+                    var checkexist = $scope.hoadon.danhsachchon.find(obj => obj.MaDT === $scope.thuoc.MaDT && obj.Donvi.ID === $scope.thuoc.Donvi.ID);
+                    if (!checkexist) {
+                        var obj = {};
+                        angular.copy($scope.thuoc, obj);
+                        $scope.hoadon.danhsachchon.push(obj);
+                    }
+                    else {
+                        checkexist.soLuong += $scope.thuoc.soLuong;
+                        checkexist.donGia += $scope.thuoc.donGia;
+                    }
+                }
+                return;
+            };
+
+            //Hủy trong danh sách mua
+            $scope.huyDauThuoc = function (obj) {
+                var index = $scope.hoadon.danhsachchon.findIndex(o => o.MaDT === obj.MaDT)
+                if (index != -1) {
+                    $scope.hoadon.danhsachchon.splice(index, 1);
+                }
+                return;
+            };
+
+            //Tính tổng tiền
+            $scope.tongtien = function () {
+                if ($scope.hoadon.danhsachchon.length === 0) {
+                    return 0;
+                }
+                else {
+                    return $scope.hoadon.danhsachchon.map(obj => {
+                        var tt = obj.donGia;
+                        //var tt = soluong * dongia;
+                        return tt;
+                    }).reduce(function (all, i) {
+                        return all + i;
+                    });
+                    return tongTien;
+                }
+            };
+
+            //Thêm vào danh hóa đơn
+            $scope.submit = function () {
+                if ($scope.hoadon.maHoaDon === "" | $scope.hoadon.ngayMua === "" | $scope.hoadon.maKhachHang === undefined) {
+                    swal("Dữ liệu còn thiếu!", "", "error");
+                    return;
+                }
+                else {
+                    if ($scope.hoadon.danhsachchon.length === 0) {
+                        swal("Chưa chọn đầu thuốc nào", "", "error");
+                        return;
+                    }
+                    else {
+                        var hoaDonMua = JSON.stringify($scope.hoadon);
+                        $.ajax({
+                            type: "post",
+                            url: "themHoaDon",
+                            data: hoaDonMua,
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "json",
+                            success: function (data) {
+                                if (data.success === "success") {
+                                    $scope.hoadon.maHoaDon = data.mamoi;
+                                    $scope.$applyAsync();
+                                    $scope.hoadon.danhsachchon = [];
+                                    swal({
+                                        type: data.success,
+                                        title: data.msg,
+                                        showConfirmButton: true,
+                                        timer: 1500
+                                    });
+                                }
+                                else {
+                                    swal(data.msg, "", "error");
+                                }
+                            }
+                        });
+                    }
+                }
+                
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Thêm hóa đơn mua
+        </h1>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <style>
+            .example-modal .modal {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                right: auto;
+                left: auto;
+                display: block;
+                z-index: 1;
+            }
+
+            .example-modal .modal {
+                background: transparent !important;
+            }
+            label.error {
+                color: red;
+                font-style: italic;
+            }
+        </style>
+
+        @* Modal Delete *@
+        <div class="modal modal-success fade" id="modal-success">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h3 class="modal-title" style="text-align: center">Thực hiện mua thành công!</h3>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-6">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Chọn mua thuốc</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    <form role="form" ng-submit="add()" id="formThemHoaDonMua">
+                        <div class="box-body">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">Mã hóa đơn</label>
+                                <input type="text" class="form-control" name="maHoaDon" id="maHoaDon" ng-model="hoadon.maHoaDon" placeholder="Mã hóa đơn" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Khách hàng</label>
+                                @*<input type="text" class="form-control" id="maKhachHang" value="@ViewBag.tenKhachHang" placeholder="Khách hàng">*@
+                                <select class="form-control select2" name="chonKhachHang" id="chonKhachHang" ng-model="hoadon.maKhachHang" ng-options="item.MaKH as item.HoTen for item in KhachHang" required>
+                                    <option selected="selected" value="">Chọn khách hàng</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="exampleInputPassword1">Ngày mua</label>
+                                <input class="form-control" type="date" name="ngayMua" id="ngayMua" ng-model="hoadon.ngayMua" placeholder="Ngày mua">
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-body">
+                            <div class="col-xs-12">
+                                <div class="form-group" style="width: 50%; float: left;">
+                                    <label for="">Loại thuốc: </label>
+                                    <select class="form-control select2" id="MaNhomThuoc" name="MaNhomThuoc" ng-options="item as item.Text for item in NhomDauThuoc" ng-model="col" required>
+                                        <option selected="selected" value="">Chọn nhóm thuốc</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="width: 50%; float: left;">
+                                    <label>Đầu thuốc</label>
+                                    <select class="form-control select2" name="chonDauThuoc" style="width: 100%;" ng-options="item as item.TenDauThuoc for item in col._DauThuoc" ng-model="thuoc" required>
+                                        <option selected="selected" value="">Chọn đầu thuốc</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="form-group" style="width: 50%; float: left;">
+                                    <label>Đơn vị</label>
+                                    <select class="form-control select2" name="chonDonVi" style="width: 100%;" ng-options="item as item.Ten for item in thuoc.JDonVi" ng-model="thuoc.Donvi" required>
+                                        <option selected="selected" value="">Chọn đơn vị</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="width: 50%; float: left;">
+                                    <label>Số lượng</label>
+                                    <input name="chonSoLuong" type="number" class="form-control" ng-model="thuoc.soLuong" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            <button type="submit" id="themThuoc" class="btn btn-primary">Thêm vào danh sách</button>
+                            <a href="#" type="submit" ng-click="submit()" class="btn btn-success" style="float: right;">Hoàn tất mua</a>
+                        </div>
+                        <div class="getDanhSach"><a href="@Url.Action("Index","HoaDon")">Danh sách thuốc đã mua</a></div>
+                    </form>
+                </div>
+                <!-- /.box -->
+            </div>
+            <!--/.col (left) -->
+
+            <!-- right column -->
+            <div class="col-md-6">
+                <div class="box">
+                    <div class="box-header">
+                        <h3 class="box-title col-xs-8 col-md-9 col">Các loại thuốc bạn vừa chọn <small>( Nhấp "Hoàn tất mua" để mua thuốc )</small></h3>
+                        <div class="box-tools col-xs-4 col-md-3">
+                            <p>Tổng tiền: <span style="font-style: italic;font-weight: 700;font-size: 15px" id="tongTien" ng-bind="tongtien() | number"></span></p>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body no-padding">
+                        <table class="table" id="donThuocMua">
+                            <thead>
+                                <tr>
+                                    <th style="width: 10px">#</th>
+                                    <th>Tên thuốc</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn vị</th>
+                                    <th>Đơn giá</th>
+                                    <th style="width: 40px"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in hoadon.danhsachchon">
+                                    <td>{{$index}}.</td>
+                                    <td>{{item.TenDauThuoc}}</td>
+                                    <td>{{item.soLuong | number}}</td>
+                                    <td>{{item.Donvi.Ten}}</td>
+                                    <td>{{item.donGia | number}}</td>
+                                    <td><a href="#"><span class="badge bg-red" ng-click="huyDauThuoc(item)">Hủy</span></a></td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+            </div>
+            <!--/.col (right) -->
+            @*<script src="~/Areas/Admin/Content/js/themhoadon.js"></script>*@
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>

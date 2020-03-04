@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewBag.Title = "Giới thiệu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles{
+    <link href="~/Content/User/css/linearicons.css" rel="stylesheet" />
+    <link href="~/Content/User/css/magnific-popup.css" rel="stylesheet" />
+    <link href="~/Content/User/css/nice-select.css" rel="stylesheet" />
+    <link href="~/Content/User/css/animate.min.css" rel="stylesheet" />
+    <link href="~/Content/User/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/User/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/Content/User/css/main.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
+    <script src="~/Content/User/js/vendor/bootstrap.min.js"></script>
+    <script src="~/Content/User/js/easing.min.js"></script>
+    <script src="~/Content/User/js/hoverIntent.js"></script>
+    <script src="~/Content/User/js/superfish.min.js"></script>
+    <script src="~/Content/User/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/Content/User/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/Content/User/js/jquery-ui.js"></script>
+    <script src="~/Content/User/js/owl.carousel.min.js"></script>
+    <script src="~/Content/User/js/jquery.nice-select.min.js"></script>
+    <script src="~/Content/User/js/mail-script.js"></script>
+    <script src="~/Content/User/js/main.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+
+            $scope.tuvan = {};
+            $scope.submitThongTin = function() {
+                var tuVan = JSON.stringify($scope.tuvan);
+                $.ajax({
+                    type: "post",
+                    url: "TuVan/SendInfo",
+                    data: tuVan,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            $scope.tuvan = {};
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+<!-- start banner Area -->
+<section class="banner-area relative about-banner" id="home">
+    <div class="overlay overlay-bg"></div>
+    <div class="container">
+        <div class="row d-flex align-items-center justify-content-center">
+            <div class="about-content col-lg-12">
+                <h1 class="text-white">
+                    Giới thiệu
+                </h1>
+                <!-- <p class="text-white link-nav"><a href="index.html">Home </a>  <span class="lnr lnr-arrow-right"></span>  <a href="about.html"> About Us</a></p> -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+<!-- Start feature Area -->
+<section class="feature-area section-gap">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Công ty Cổ phần Dược Nghệ An</h1>
+                    <p>Đơn vị lao động anh hùng.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details">
+                        <img src="~/Content/User/img/congty.gif" style="max-width: 100%;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details" style="white-space:pre-line">
+                        <h4 style="margin-bottom:10px">Tên doanh nghiệp: Công ty Cổ phần Dược Nghệ An</h4><p>
+                            Tên viết tắt : DNA PHARMA
+                            Ngày thành lập : 10/03/1960
+                            Địa chỉ trụ sở chính : 14 - Phượng Hoàng Trung Đô – Tp.Vinh - Nghệ An
+                            Điện thoại : 0366561924
+                            Email : dna@dnapharma.com.vn
+                            Website : https://pmeeting.vn/map/
+                            Lĩnh vực sản xuất kinh doanh :
+                            + Sản xuất kinh doanh Dược - Mỹ phẩm, thực phẩm thuốc.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details" style="white-space:pre-line">
+                        <h4 style="margin-bottom:10px">Quá trình hình thành và phát triển</h4><p>
+                            Ngày 10/03/1960 UBND tỉnh Nghệ An ra quyết định số 134/QĐ-UB hợp nhất hiệu thuốc tây Nghệ An và Công ty thuốc Nam Bắc thành “Quốc doanh dược phẩm Nghệ An”.
+
+                            Năm 1976 : Thực hiện chủ trương hợp nhất 2 tỉnh Nghệ An và Hà Tỉnh của nhà nước thành tỉnh Nghệ Tĩnh. Ngày 20/05/1976 UBND tỉnh Nghệ An ra quyết định 1308 /QĐ-UB sát nhập 2 quốc doanh dược phẩm Nghệ An và Hà Tỉnh thành “Công ty dược phẩm Nghệ Tĩnh”.
+
+                            Năm 1979 công ty được Hội đồng Bộ trưởng tặng cờ thi đua xuất sắc, hai đơn vị cấp huyện được tặng thưởng huân chương lao động hạng 3.
+
+                            Năm 1981 theo chủ trương của nhà nước và sự chỉ đạo của Bộ Y tế , UBND Tỉnh Nghệ Tĩnh đã có quyết định số 725/QĐ-UB ngày 27/07/1981 sát nhập 3 xí nghiệp I,II, xí nghiệp sản xuất thuốc Y học cổ truyền với Công ty Dược phẩm thành Xí nghiệp lien hợp Dược Nghệ Tĩnh. Đồng thời chuyển giao, phân cấp các hiệu thuốc thành phố, huyện về cho thành phố, huyện quản lý.
+
+                            Từ 1986 đến 1989 tham gia triển lãm hội chợ toàn quốc được tặng 12 huy chương vàng,11 huy chương bạc và 4 bằng khen cho các sản phẩm thuốc và dược liệu.
+
+                            Năm 1991 thực hiện chủ trương của nhà nước về tách chia tỉnh, Tỉnh Nghệ Tĩnh thành 2 tỉnh Nghệ An và Hà Tĩnh, công ty mang tên mới là “Công ty Dược phẩm-dược liệu Nghệ An”
+
+                            Năm 1993 thực hiện chủ trương của nhà nươc sát nhập các công ty dược phẩm thành phố, huyện với Công ty dược phẩm - dược liệu Nghệ An. Các đơn vị Dược phẩm thành phố, huyện trở thành đơn vị hiệu thuốc trực thuộc công ty.
+
+                            Năm 1998 Công ty thành lập TTTM Dược và mỹ phẩm hoạt động có hiệu quả, được nhiều đối tác trong và ngoài nước quan tâm lien doanh liên kết.
+
+                            Năm 2000 do đặc điểm và điều kiện hoạt động, được UBND tỉnh Nghệ An cho phép đổi tên Công ty Dược phẩm - dược liệu Nghệ An thành “Công ty Dược Nghệ An”.
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="details">
+                        <img src="~/Content/User/img/quatrinh.jpg" style="max-width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End feature Area -->

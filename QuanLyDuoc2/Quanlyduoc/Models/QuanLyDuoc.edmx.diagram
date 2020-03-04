@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="9e300cc598674ee4955d1cc2921100ba" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_Duoc1Model.CongTy" Width="1.5" PointX="0.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ChamCong" Width="1.5" PointX="8.25" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ChiTietChuyenKhoThuoc" Width="1.5" PointX="13.5" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ChiTietHoaDonMua" Width="1.5" PointX="10.5" PointY="19.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ChiTietHoaDonNhap" Width="1.5" PointX="13.5" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ChiTietHoaDonXuat" Width="1.5" PointX="15.75" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.DauThuoc" Width="1.5" PointX="11.25" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.DonVi" Width="1.5" PointX="11.25" PointY="23.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.HoaDonMua" Width="1.5" PointX="8.25" PointY="16" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.HoaDonNhap" Width="1.5" PointX="11.25" PointY="15.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.HoaDonVanChuyen" Width="1.5" PointX="6" PointY="21.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.HoaDonXuat" Width="1.5" PointX="13.5" PointY="19" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KeHoachLamViec" Width="1.5" PointX="3" PointY="15.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KhachHang" Width="1.5" PointX="0.75" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.Kho" Width="1.5" PointX="9" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KhoDauThuoc" Width="1.5" PointX="13.5" PointY="12" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KhoNhanVien" Width="1.5" PointX="11.25" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KhuyenMai" Width="1.5" PointX="11.25" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.KhuyenMaiDauThuoc" Width="1.5" PointX="13.5" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.NhaSanXuat" Width="1.5" PointX="9" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.NhomDauThuoc" Width="1.5" PointX="14.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.NhomQuyen" Width="1.5" PointX="3.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.NhomQuyenRoute" Width="1.5" PointX="9" PointY="22.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.Page" Width="1.5" PointX="2.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.Position" Width="1.5" PointX="8.25" PointY="26.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.PositionNow" Width="1.5" PointX="8.25" PointY="29.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.QuanHuyen" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.Route" Width="1.5" PointX="6.75" PointY="32.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TagsDThuocNThuoc" Width="1.5" PointX="16.5" PointY="6.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TaiKhoan" Width="1.5" PointX="6" PointY="14.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TinhThanhPho" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TuVan" Width="1.5" PointX="4.75" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.ThuChi" Width="1.5" PointX="5.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TrinhDuoc" Width="1.5" PointX="0.75" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.TrinhDuocKhachHang" Width="1.5" PointX="3" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_Duoc1Model.VanChuyen" Width="1.5" PointX="3.75" PointY="21.5" IsExpanded="true" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChamCong_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietChuyenKhoThuoc_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietChuyenKhoThuoc_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietChuyenKhoThuoc_Kho1" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonMua_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonMua_DonVi" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonMua_HoaDonMua" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonNhap_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonNhap_DonVi" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonNhap_HoaDonNhap" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonXuat_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonXuat_DonVi" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_ChiTietHoaDonXuat_HoaDonXuat" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_DauThuoc_NhaSanXuat1" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_DonVi_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhoDauThuoc_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhuyenMaiDauThuoc_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TagsDThuocNThuoc_DauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhoDauThuoc_DonVi" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonMua_HoaDonVanChuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonMua_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonMua_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonXuat_HoaDonMua" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonNhap_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonNhap_NhaSanXuat" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonNhap_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonVanChuyen_VanChuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonXuat_HoaDonVanChuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonXuat_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonXuat_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_HoaDonXuat_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KeHoachLamViec_TrinhDuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TrinhDuocKhachHang_KhachHang" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhoDauThuoc_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhoNhaVien_Kho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhoNhaVien_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_KhuyenMaiDauThuoc_KhuyenMai" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TagsDThuocNThuoc_NhomDauThuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_NhomQuyenRoute_NhomQuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TaiKhoan_NhomQuyen" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_NhomQuyenRoute_Route" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_Position_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_PositionNow_TaiKhoan" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_QuanHuyen_TinhThanhPho" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TaiKhoan_TrinhDuoc" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_Duoc1Model.FK_TrinhDuocKhachHang_TrinhDuoc" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

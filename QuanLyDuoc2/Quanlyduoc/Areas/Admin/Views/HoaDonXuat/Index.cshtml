@@ -1,0 +1,203 @@
+﻿
+@{
+    ViewBag.Title = "Tổng kết bán";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <style>
+        .example-modal .modal {
+            position: relative;
+            top: auto;
+            bottom: auto;
+            right: auto;
+            left: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .example-modal .modal {
+            background: transparent !important;
+        }
+    </style>
+
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <link href="~/Areas/Admin/Content/css/taikhoan.css" rel="stylesheet" />
+
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            $scope.datefilter = {
+                fromDate: new Date(),
+                toDate: new Date()
+            }
+
+            //Lọc
+            function soSanhDate(x, y) {
+                if (x.getYear() > y.getYear()) return true;
+                if (x.getYear() === y.getYear() && x.getMonth() > y.getMonth()) return true;
+                if (x.getYear() === y.getYear() && x.getMonth() === y.getMonth() && x.getDate() >= y.getDate()) return true;
+                return false;
+            };
+            
+            $scope.listXuat = $scope.model.Jxuat;
+            $scope.loc = function () {
+                $scope.listXuat = $scope.model.Jxuat.filter(function (x, i) {
+                    var rt = false;
+                    if ((soSanhDate(new Date(x.NgayXuat), $scope.datefilter.fromDate)) && (soSanhDate($scope.datefilter.toDate, new Date(x.NgayXuat))))
+                        rt = true;
+                    return rt;
+                });
+            }
+
+            //Phân trang
+            $scope.curentPage = 1;
+            $scope.loadData = function () {
+                $scope.pageSize = 10;
+                return loadData1($scope.listXuat, $scope.pageSize);
+            }
+            function loadData1(listPaging, pageSize) {
+                $scope.pageNumber = Math.ceil(listPaging.length / pageSize);
+
+                if ($scope.pageNumber <= 10) {
+                    $scope.startPage = 1;
+                    $scope.endPage = $scope.pageNumber;
+                }
+                else {
+                    if ($scope.curentPage <= 6) {
+                        $scope.startPage = 1;
+                        $scope.endPage = 10;
+                    } else if ($scope.curentPage + 4 >= $scope.pageNumber) {
+                        $scope.startPage = $scope.pageNumber - 9;
+                        $scope.endPage = $scope.pageNumber;
+                    } else {
+                        $scope.startPage = $scope.curentPage - 5;
+                        $scope.endPage = $scope.curentPage + 4;
+                    }
+                }
+
+                //Phạm vi hiện thị của list trang
+                $scope.arrayPage = [];
+                for (var i = 1; i <= $scope.pageNumber; i++) {
+                    $scope.arrayPage.push(i);
+                }
+                $scope.listIndexPage = $scope.arrayPage.slice($scope.startPage - 1, $scope.endPage);
+
+
+                if ($scope.curentPage > $scope.pageNumber)
+                    $scope.curentPage = 1;
+
+                return listPaging.filter(function (x, i) {
+                    var rt = false;
+                    if ((i >= (pageSize * ($scope.curentPage - 1))) && (i < (pageSize * ($scope.curentPage - 1)) + pageSize))
+                        rt = true;
+                    return rt;
+                });
+            };
+            //chọn trang
+            $scope.changePage = function (pageno) {
+                if (pageno < 1 || pageno > $scope.pageNumber) return;
+                $scope.curentPage = pageno;
+                $scope.$applyAsync();
+            };
+            
+
+            scope = $scope;
+        }]);
+    </script>
+    @*<script>
+            $(function () {
+                $('#example1').DataTable()
+                $('#example2').DataTable({
+                    'paging': true,
+                    'lengthChange': false,
+                    'searching': false,
+                    'ordering': true,
+                    'info': true,
+                    'autoWidth': false
+                })
+            })
+        </script>*@
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Tổng kết xuất
+        </h1>
+    </section>
+    <div style="clear: both;"></div>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row" style="margin-bottom: 10px;">
+            <div class="col-xs-6 col-md-3">
+                <label>Từ:</label>
+                <input type="date" ng-model="datefilter.fromDate" style="width: 90%" />
+            </div>
+            <div class="col-xs-6 col-md-3">
+                <label>Đến:</label>
+                <input type="date" ng-model="datefilter.toDate" style="width: 87%" />
+            </div>
+            <div class="col-xs-2 col-md-2">
+                <button ng-click="loc()">Lọc</button>
+            </div>
+            <a class="btn" href="HoaDonXuat/Export?dateFrom={{datefilter.fromDate}}&&dateTo={{datefilter.toDate}}" target="_blank" style="float: right;">Xuất Excel</a>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px;" data-toggle="modal" data-target="#modal-default" ng-click="taoFormThem()">Thêm mới</button>*@
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body tableResponeScoll">
+                        @*<table id="example2" class="table table-bordered table-hover">*@
+                        <table class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Kho</th>
+                                    <th>Người xuất</th>
+                                    <th>Khách hàng</th>
+                                    <th>Ngày xuất</th>
+                                    <th>Người vận chuyển</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in loadData()">
+                                    <td class="col-md-2 col-xs-2"><a href="#">{{item.MaHD}}</a></td>
+                                    <td class="col-md-2 col-xs-2">{{item.TenKho}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.NguoiXuat}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.KhachHang}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.NgayXuat}}</td>
+                                    <td class="col-md-2 col-xs-2">{{item.NguoiVanChuyen}}</td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        @Html.Partial("~/Areas/Admin/Views/Partial/MenuPaging.cshtml")
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>
+
+

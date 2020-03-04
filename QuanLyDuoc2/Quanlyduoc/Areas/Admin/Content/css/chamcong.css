@@ -1,0 +1,20 @@
+﻿.content .cham-cong .box-body img {
+    width: 100%;
+}
+
+.content .cham-cong .box-body .info{
+    min-height: 120px;
+}
+.content .cham-cong .box-body table {
+    margin: 10px 0px;
+}
+.content .cham-cong .box-body table tr {
+    line-height: 2;
+}
+    .content .cham-cong .box-body table tr td{
+        padding-left: 5px;
+    }
+
+.content .danh-sach-cong h3{
+    margin-top: 0px;
+}

@@ -1,0 +1,179 @@
+﻿@model Quanlyduoc.Models.DauThuocDonVi
+
+@{
+    ViewBag.Title = "Thêm đầu thuốc";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/themdauthuoc.css" rel="stylesheet" />
+    <link href="~/Content/Admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" /> @* Editor *@
+    <link href="~/Areas/Admin/Content/css/tags.css" rel="stylesheet" /> @*Tags*@
+    @*<link rel="stylesheet" href="http://mbenford.github.io/ngTagsInput/css/ng-tags-input.min.css" />*@
+    <link href="~/Content/ng-tags-input.min.css" rel="stylesheet" />
+
+}
+@section scripts{
+    <script src="~/Areas/Admin/Content/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/Content/js/themDauThuoc.js"></script>
+    <script src="~/Content/Admin/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+    <script src="~/Content/Admin/bower_components/ckeditor/ckeditor.js"></script>    @* Editor *@
+    @*Tags*@
+    @*<script src="http://mbenford.github.io/ngTagsInput/js/ng-tags-input.min.js"></script>*@
+    <script src="~/Content/ng-tags-input.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Replace the <textarea id="Status"> with a CKEditor
+            CKEDITOR.replace('Status');
+            //bootstrap WYSIHTML5 - text editor
+            $('.textarea').wysihtml5();
+        });
+    </script>
+    <script>
+        var scope;
+        var myapp = angular.module('myapp', ['ngTagsInput']);
+        myapp.controller('global', function ($scope, $http) {
+            $scope.movies = [];
+            $scope.loadMovies = function (query) {
+
+                return @Html.Raw(Json.Encode(ViewBag.NhomThuoc));
+            };
+            $scope.tags = [];
+            $scope.added = function ($tag) {
+                if ($scope.tags.find(obj => obj === $tag.id)) {
+                    $scope.tags.pop($tag.id);
+                }
+                else
+                $scope.tags.push($tag.id);
+            };
+
+            scope = $scope;
+        });
+    </script>
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Thêm đầu thuốc mới
+        </h1>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-xs-12 col-md-offset-1 col-md-10">
+                <!-- general form elements -->
+                <div class="box box-primary" style="padding:40px 15px;">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Nhập thông tin đầu thuốc</h3>
+                        <span style="color:red;">@ViewBag.ThongBao</span>
+                    </div>
+
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    @using (Html.BeginForm("Themdauthuoc", "DauThuoc", FormMethod.Post, new { @enctype = "multipart/form-data", @id = "formAddDauThuoc" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="box-body">
+                            @*<div class="form-group">
+                                    <label for="">Mã đầu thuốc:<span style="color:red;">@ViewBag.KiemtraMa</span></label>
+                                    @Html.EditorFor(model => model.MaDT, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.MaDT, "", new { @class = "text-danger" })
+                                </div>*@
+                            <div class="form-group">
+                                <label for="">Tên đầu thuốc:</label>
+                                @Html.EditorFor(model => model.TenDauThuoc, new { htmlAttributes = new { @class = "form-control" } })
+                            </div>
+                            <div class="form-group">
+                                <label for="">Công dụng:</label>
+                                <!-- <input type="textarea" class="form-control" placeholder="Tên sản phẩm" id="inputChiTietSanPham"> -->
+                                @Html.TextAreaFor(model => model.CongDung, new { htmlAttributes = new { @class = "form-control text-areafor" }, @rows = 5, style = "width:100% !important;" })
+                            </div>
+                            <div class="form-group">
+                                <label for="">Cách dùng:</label>
+                                <!-- <input type="textarea" class="form-control" placeholder="Tên sản phẩm" id="inputChiTietSanPham"> -->
+                                @Html.TextAreaFor(model => model.CachDung, new { htmlAttributes = new { @class = "form-control text-areafor" }, @rows = 5, style = "width:100% !important;" })
+                            </div>
+                            <div class="form-group">
+                                <label for="">Status:</label>
+                                @Html.TextAreaFor(model => model.Status, new { htmlAttributes = new { @class = "form-control text-areafor" }, @rows = 5, style = "width:100% !important;" })
+                            </div>
+                            <div class="form-group" id="donviluukho">
+                                <label for="">Đơn vị lưu kho: </label>
+                                <ul class="list-donviluukho">
+                                    <li>
+                                        <span><b>C1</b></span><br />
+                                        Tên &nbsp; &nbsp;: @Html.EditorFor(model => model.TenDonVi, new { htmlAttributes = new { @class = "", @placeholder = "VD: Thùng" } })<br />
+                                        Hệ số: @Html.EditorFor(model => model.HeSoDonVi, new { htmlAttributes = new { @class = "", @readonly = "readonly", @Value = "1", @disabled = "disabled" } })
+                                        @*Tên &nbsp; &nbsp;: <input placeholder="VD: Thùng" name="tenDonVi1" /><br />
+                                            Hệ số: <input value="1" readonly disabled="disabled" name="heSoDonVi1" />*@
+                                    </li>
+                                    <li>
+                                        <span><b>C2</b></span><br />
+                                        Tên &nbsp; &nbsp;: @Html.EditorFor(model => model.TenDonVi1, new { htmlAttributes = new { @class = "", @placeholder = "VD: Hộp" } })<br />
+                                        Hệ số: @Html.EditorFor(model => model.HeSoDonVi1, new { htmlAttributes = new { @class = "", @placeholder = "1 c1 = ?" } })
+                                    </li>
+                                    <li>
+                                        <span><b>C3</b></span><br />
+                                        Tên &nbsp; &nbsp;: @Html.EditorFor(model => model.TenDonVi2, new { htmlAttributes = new { @class = "", @placeholder = "VD: Vỉ" } })<br />
+                                        Hệ số: @Html.EditorFor(model => model.HeSoDonVi2, new { htmlAttributes = new { @class = "", @placeholder = "1 c2 = ?" } })
+                                    </li>
+                                    <li>
+                                        <span><b>C4</b></span><br />
+                                        Tên &nbsp; &nbsp;: @Html.EditorFor(model => model.TenDonVi3, new { htmlAttributes = new { @class = "" } })<br />
+                                        Hệ số: @Html.EditorFor(model => model.HeSoDonVi3, new { htmlAttributes = new { @class = "" } })
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="">Giá bán lẻ:</label>
+                                @Html.EditorFor(model => model.GiaBanLe, new { htmlAttributes = new { @class = "form-control", @placeholder = "Giá bán của đơn vị nhỏ nhất" } })
+                            </div>
+                            <div class="form-group">
+                                <label for="">Tags nhóm:</label>
+                                <input type="hidden" name="tagsNhom" value="{{tags.join()}}" />
+                                <tags-input class="bootstrap" ng-model="movies" placeholder="Thêm nhóm thuốc" replace-spaces-with-dashes="false" display-property="text" key-property="id" on-tag-added="added($tag)" on-tag-removed="added($tag)">
+                                    <auto-complete source="loadMovies($query)" min-length="0" debounce-delay="0" max-results="10"></auto-complete>
+                                </tags-input>
+                            </div>
+                            <div class="form-group">
+                                @*<div class="form-select fleft">
+                                        <label for="">Nhóm thuốc: </label>
+                                        @Html.DropDownList("MaNhomThuoc")
+                                    </div>*@
+                                <div class="form-select">
+                                    <label for="">Nhà sản xuất: </label>
+                                    @Html.DropDownList("MaNSX")
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                            <div class="form-group">
+                                <label for="">Chọn ảnh: </label>
+                                <div class="">
+                                    @* tên của thẻ input trùng vs tham số của controller *@
+                                    <input type="file" name="anhDauThuoc">
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <button class="btn btn-danger" style="margin-right:10px; width: 80px;">Hủy</button>
+                            <button type="submit" class="btn btn-primary" value="submit" ng-click="checkTag()" style="width: 80px;">Thêm</button>
+                        </div>
+                    }
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col-md-12-->
+        </div>
+        <!-- /.box-body -->
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->

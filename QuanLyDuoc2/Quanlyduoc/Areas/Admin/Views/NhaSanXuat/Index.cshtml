@@ -1,0 +1,390 @@
+﻿@{
+    ViewBag.Title = "Nhà sản xuất";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+    int countPage = (int)ViewBag.CountPage;
+    int page = (int)ViewBag.Page;
+}
+@section styles{
+    <!-- Table -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/NhaSanXuat.css" rel="stylesheet" />
+   
+    
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/Content/js/NhaSanXuat.js"></script>
+    <script>
+        var scope;
+        var myApp = angular.module('myapp', []);
+        myApp.controller('global', ['$scope', function ($scope) {
+            $scope.model =@Html.Raw(Json.Encode(Model.Data));
+            $scope.AddNSX = {};
+            $scope.EditNSX = {};
+            $scope.DeleteNSX = {};
+
+
+            $scope.add = function () {
+                $.ajax({
+                    url: "NhaSanXuat/ThemNhaSanXuat",
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json;charset=UTF-8",
+                    data: JSON.stringify($scope.AddNSX),
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $scope.AddNSX.MaNSX = data.MaNSX;
+                            $scope.model.JNhaSanXuat.push($scope.AddNSX);
+                            $scope.AddNSX = {};
+                            $scope.$applyAsync();
+                        }
+                        else
+                            alert("That bai");
+                    },
+                });
+            }
+            $scope.sua = function (maNSX) {
+                $scope.MaNSX = maNSX;
+                $scope.EditNSX = $scope.model.JNhaSanXuat.find(sx => sx.MaNSX === $scope.MaNSX);
+                $scope.$applyAsync();
+            }
+            $scope.edit = function () {
+                var editNSX = JSON.stringify($scope.EditNSX);
+                $.ajax({
+                    url: 'NhaSanXuat/SuaNhaSanXuat',
+                    type: 'post',
+                    dataType: 'json',
+                    contentType: 'application/json;charset=UTF-8',
+                    data: editNSX,
+                    success: function (data) {
+                        if (data.success === "success") {
+                            $scope.$applyAsync();
+                            $scope.EditNSX = {};
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $scope.$apply();
+                        }
+                        else
+                            alert("That Bai");
+                    }
+                });
+            }
+            $scope.xoa = function (maNSX, tenNSX) {
+                $scope.TenNSX = tenNSX;
+                $scope.MaNSX = maNSX;
+                $scope.DeleteNSX = $scope.model.JNhaSanXuat.find(sx => sx.MaNSX === maNSX)
+                $scope.$applyAsync();
+            }
+            $scope.delete = function () {
+
+                var index = $scope.model.JNhaSanXuat.findIndex(sx => sx.MaNSX === $scope.MaNSX);
+                $.ajax({
+                    url: "NhaSanXuat/XoaNhaSanXuat",
+                    type: "post",
+                    dataType: "json",
+                    contentType: "application/json;charset=UTF-8",
+                    data: JSON.stringify($scope.DeleteNSX),
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal({
+                                type: data.success,
+                                title: data.msg,
+                                showConfirmButton: true,
+                                timer: 1500
+                            });
+                            $scope.model.JNhaSanXuat.splice(index, 1);
+                            $scope.$applyAsync();
+                        } else
+                            alert("That bai");
+                    }
+                });
+            }
+
+            scope = $scope;
+        }]);
+    </script>
+
+
+}
+<style>
+    .box-footer ul li {
+        display: inline-block;
+        padding: 2px;
+    }
+
+        .box-footer ul li a {
+            border: 1px solid #48aae2;
+            padding: 3px 8px;
+            border-radius: 50%;
+        }
+
+        .box-footer ul li.active a {
+            background-color: #48aae2;
+            color: aliceblue;
+        }
+</style>
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header"></section>
+
+    @*DELETE*@
+    <div class="modal modal-danger fade" id="modal-danger">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">Xoa Nha San Xuat</h4>
+                </div>
+
+                <div class="modal-body">
+                    <h4>Bạn Muốn Xóa Nhà Sản Xuất : {{TenNSX}}</h4>
+                </div>
+                <!-- /.box-body -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-outline" ng-click="delete()">Delete</button>
+                </div>
+                <!-- /.box-footer -->
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-DELETE -->
+
+    @*EDIT*@
+    <div class="modal fade" id="modal-info">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">Sửa Thông Tin</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="box-body">
+
+                            <div class="form-group">
+                                <label for="inputTenNSX" class="col-sm-2 control-label">Tên NSX</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="TenNSX" ng-model="EditNSX.TenNSX" placeholder="Tên NSX">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputDiaChi" class="col-sm-2 control-label">Địa Chỉ</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="DiaChi" ng-model="EditNSX.DiaChi" placeholder="Địa Chỉ">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputSDT" class="col-sm-2 control-label">Sô Điện Thoại</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" name="SDT" ng-model="EditNSX.SDT" placeholder="Sô Điện Thoại">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Email</label>
+                                <div class="col-sm-10">
+                                    <input type="email" class="form-control" name="Email" ng-model="EditNSX.Email" placeholder="Email">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary" ng-click="edit()">Lưu</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+    @*ADD nhà sản xuất*@
+    <div class="modal fade" id="modal-default">
+        <div class="modal-dialog">
+            @using (Html.BeginForm("ThemNhaSanXuat", "NhaSanXuat", FormMethod.Post, new { @id = "NhaSanXuat" }))
+            {<div class="modal-content">
+                    <div class="modal-header" style="background-color: #367fa9; color: #fff;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">Thêm Nhà Sản Xuất</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form class="form-horizontal">
+                            <div class="box-body">
+
+                                <div class="form-group">
+                                    <label for="inputTenNSX" class=" control-label">Tên NSX</label>
+                                    <div>
+                                        <input type="text" class="form-control" name="TenNSX" @*ng-model="AddNSX.TenNSX"*@ placeholder="Tên NSX">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputDiaChi" class="control-label">Địa Chỉ</label>
+                                    <div>
+                                        <input type="text" class="form-control" name="DiaChi" @*ng-model="AddNSX.DiaChi"*@ placeholder="Địa Chỉ">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputSDT" class=" control-label">Sô Điện Thoại</label>
+                                    <div>
+                                        <input type="text" class="form-control" name="SDT" @*ng-model="AddNSX.SDT"*@ placeholder="Sô Điện Thoại">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="inputEmail" class=" control-label">Email</label>
+                                    <div>
+                                        <input type="email" class="form-control" name="Email" @*ng-model="AddNSX.Email"*@ placeholder="Email">
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary" @*ng-click="add()"*@>Thêm</button>
+                    </div>
+                </div>}
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<button class="btn btn-primary" style="width: 80px;">Thêm mới</button>*@
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-header with-border">
+                        <h3 class="box-title thuoc1">
+                            Danh Sách Nhà Sản Xuất
+                        </h3>
+                        <div class="box-tools pull-right">
+                            <a href="#" class="btn btn-primary" data-toggle="modal" data-target="#modal-default">Thêm mới</a>
+                        @*<div class="box-tools pull-right ">
+                            <a href="#" class="btn btn-default thuoc" data-toggle="modal" data-target="#modal-default">Thêm mới</a>
+                        </div>*@
+                    </div>
+                    @*<div class="box-body">
+                        <table class="table table-bordered table-hover">
+                        </div>
+                    </div>*@
+                    <div class="box-body">
+                        <table   class="table table-bordered table-hover " >
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Ma NSX</th>
+                                    <th>Tên nhà sản xuất</th>
+                                    <th>Địa chỉ</th>
+                                    <th>Số điện thoại</th>
+                                    <th>Email</th>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JNhaSanXuat track by item.MaNSX">
+                                    <td>{{$index +1}}</td>
+                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1">{{item.MaNSX}}</td>
+                                    <td class="col-2 col-sm-2 col-md-3 col-lg-3">{{item.TenNSX}}</td>
+                                    <td class="col-5 col-sm-5 col-md-4 col-lg-4">{{item.DiaChi}}</td>
+                                    <td class="col-2 col-sm-2 col-md-2 col-lg-2">{{item.SDT}}</td>
+                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1">{{item.Email}}</td>
+                                    <td class="col-1 col-sm-1 col-md-1 col-lg-1" style="text-align: center;">
+                                        <a href='#' ng-click="sua(item.MaNSX)" class="btn btn-primary" data-toggle="modal" data-target="#modal-info" style="padding: 0px 5px; font-size: 16px;"> <i class="fa fa-pencil"></i></a>
+                                        <a href="#" ng-click="xoa(item.MaNSX,item.TenNSX)" type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-danger" style="padding: 0px 5px; font-size: 17px; color: #fff;"><i class="fa fa-trash-o"></i></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                    <div class="box-footer">
+                        <ul class="col-xs-offset-5 col-lg-5" id="page">
+                            <!-- first Page -->
+                            <li ><a href="@(HttpContext.Current.Request.Url.AbsolutePath + "?page=" + 1)"><<<</a></li>
+                            <!-- previous Page -->
+                            <li>
+                                <a href="@(HttpContext.Current.Request.Url.AbsolutePath + "?page=" +(page-1))">Prev</a >
+                              </li>
+                            @for (int i = 1; i <= countPage; i++)
+                            {
+                                <li class="@(i == page ? "active" : "")">
+                                    <a href="@(HttpContext.Current.Request.Url.AbsolutePath + "?page=" + i)">@i</a>
+                                </li>
+                            }
+                            <!-- Next Page -->
+                            <li>
+                                <a href="@(HttpContext.Current.Request.Url.AbsolutePath + "?page=" +(page==countPage?countPage:(page+1)))">Next</a>
+                            </li>
+                            <!-- Last Page -->
+                            <li>
+                                <a href="@(HttpContext.Current.Request.Url.AbsolutePath+"?page="+countPage)">>>></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>
+<script type="text/javascript">
+
+
+    $(document).ready(function () {
+        if (page == "1") {
+            $("#prev").hide();
+        }
+        $('#example').DataTable({
+            responsive: {
+                details: {
+                    display: $.fn.dataTable.Responsive.display.modal({
+                        header: function (row) {
+                            var data = row.data();
+                            return 'Details for ' + data[0] + ' ' + data[1];
+                        }
+                    }),
+                    renderer: $.fn.dataTable.Responsive.renderer.tableAll({
+                        tableClass: 'table'
+                    })
+                }
+            }
+        });
+    });
+</script>

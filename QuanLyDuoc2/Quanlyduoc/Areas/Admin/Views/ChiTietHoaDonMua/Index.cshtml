@@ -1,0 +1,147 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+
+@*@model IEnumerable<Quanlyduoc.Models.DonDatHangModels>*@
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+            //$scope.tongtien = 0;
+            //for (let item of $scope.model.JChiTietHoaDon) {
+            //    $scope.tongtien = $scope.tongtien + item.DonGia;
+            //}
+            $scope.$applyAsync();
+            scope = $scope;
+        }]);
+    </script>
+
+    <script>
+
+        $(function () {
+            $('#example1').DataTable()
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': true,
+                'info': true,
+                'autoWidth': false,
+                'destroy': true
+            });
+        });
+    </script>
+}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Chi tiết hóa đơn {{model.JHoaDon.MaHD}}
+        </h1>
+
+    </section>
+    <style>
+        .content .row-header table {
+            font-size: 16px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+            .content .row-header table tr {
+                line-height: 1.6;
+            }
+
+        .content .row-header .text-bold {
+            font-weight: 600;
+        }
+
+        .content .row-header table td {
+            width: 150px;
+            font-style: italic;
+        }
+    </style>
+    <!-- Main content -->
+    <section class="content">
+        @*Row thông tin hóa đơn*@
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    <table>
+                        <tr>
+                            <td class="text-bold">Mã hóa đơn: </td>
+                            <td>{{model.JHoaDon.MaHD}}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-bold">Tên khách hàng: </td>
+                            <td>{{model.JHoaDon.TenKH}}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-bold">Ngày mua: </td>
+                            <td>{{model.JHoaDon.NgayMua | date}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @*Row chi tiết hóa đơn*@
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box" @*style="margin-top: 30px;"*@>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <table id="example2" class="table table-bordered table-hover">
+                            <thead>
+                                <tr>
+                                    <th>STT</th>
+                                    <th>Tên đầu thuốc</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn vị</th>
+                                    <th>Đơn giá</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in model.JChiTietHoaDon">
+                                    <td>{{model.JChiTietHoaDon.indexOf(item) + 1}}</td>
+                                    <td class="col-md-6 col-xs-6 col-sm-6"><a href="#">{{item.TenDT}}</a></td>
+                                    <td class="col-md-2 col-xs-2 col-sm-2">{{item.SoLuong}}</td>
+                                    <td class="col-md-2 col-xs-2 col-sm-2">{{item.TenDonvi}}</td>
+                                    <td class="col-md-2 col-xs-2 col-sm-2">{{item.DonGia}}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                @*<tr>
+                                        <td></td>
+                                        <td class="col-md-8 col-xs-7 col-sm-7"></td>
+                                        <td class="col-md-2 col-xs-2 col-sm-2"></td>
+                                        <td class="col-md-2 col-xs-3 col-sm-3" style="font-weight: 600; font-size: 17px; text-align: center;">Tổng tiền: {{tongtien}}</td>
+                                    </tr>*@
+                            </tfoot>
+
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+</div>
+
+

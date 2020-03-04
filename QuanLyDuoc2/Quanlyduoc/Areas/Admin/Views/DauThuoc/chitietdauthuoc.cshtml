@@ -1,0 +1,76 @@
+﻿@model Quanlyduoc.Models.DauThuoc
+
+@{
+    ViewBag.Title = "chitietdauthuoc";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+    <!-- Table -->
+    <link href="~/Content/Admin/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Areas/Admin/Content/css/styleLocal.css" rel="stylesheet" />
+}
+@section scripts{
+    <!-- Table -->
+    <script src="~/Content/Admin/bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script src="~/Content/Admin/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Chi tiết đầu thuốc  @Html.DisplayFor(model => model.TenDauThuoc)
+        </h1>
+        <a href="@Url.Action("SuaDauThuoc", "DauThuoc", new { MaDT = @Html.DisplayFor(model => model.MaDT) })"><button class="btn btn-primary">Chỉnh sửa</button></a>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="row-header">
+                    @*<a href="@Url.Action("Themdauthuoc", "DauThuoc")"><button class="btn btn-primary" style="width: 80px;">Thêm mới</button></a>*@
+                    <span style="color:green;">@ViewBag.Thanhcong</span>
+                </div>
+                <div class="box">
+                    <!-- /.box-header -->
+                    <div class="box-body" style="padding: 20px 20px;">
+                        <div class="row">
+                            <div class="col-xs-12 col-md-3">
+                                <img style="max-width: 100%; max-height: 100%;" src="~/Content/Images/DauThuoc/@Html.DisplayFor(model => model.Image)" />
+                            </div>
+                            <div class="col-xs-12 col-md-9" style="padding-top: 30px;">
+                                <dl class="dl-horizontal">
+                                    <dt> Tên đầu thuốc:</dt>
+                                    <dd> @Html.DisplayFor(model => model.TenDauThuoc)</dd>
+                                    <dt>Công dụng:</dt>
+                                    <dd> @Html.DisplayFor(model => model.CongDung)</dd>
+                                    <dt>Cách dùng:</dt>
+                                    <dd>@Html.DisplayFor(model => model.CachDung)</dd>
+                                    <dt> Giá bán lẻ:</dt>
+                                    <dd> @Html.DisplayFor(model => model.GiaBanLe)</dd>
+                                    <dt>Nhà sản xuất:</dt>
+                                    <dd>@Html.DisplayFor(model => model.NhaSanXuat.TenNSX)</dd>
+                                    <dt>Nhóm:</dt>
+                                    <dd>@Html.DisplayFor(model => model.NhomDauThuoc.TenNhom)</dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <input id="content-thong-tin" style="display:none;" value="@Html.DisplayFor(model => model.Status)"/>
+                                <h2>Thông tin chi tiết</h2>
+                                <div id="thong-tin-chi-tiet" style="overflow-x: scroll;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        $(document).ready(function () {
+            $("#thong-tin-chi-tiet").html($("#content-thong-tin").val());
+        });
+    </script>
+</div>

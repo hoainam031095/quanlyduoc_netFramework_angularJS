@@ -1,0 +1,128 @@
+﻿
+@{
+    ViewBag.Title = "Thêm hóa đơn thu";
+    Layout = "~/Areas/Admin/Views/Layout/AdminLayout.cshtml";
+}
+@section styles{
+}
+@section scripts{
+    <script type="text/javascript">
+        var scope;
+        myApp.controller('global', ['$scope', function ($scope) {
+            $scope.hoaDonThuChi = {
+                NgayLap: new Date(),
+                NguoiLap: @Html.Raw(Json.Encode(ViewBag.NguoiLap)),
+            };
+
+            $scope.themThuChi = function () {
+                var thuchi = JSON.stringify($scope.hoaDonThuChi);
+                $.ajax({
+                    type: "post",
+                    url: "/ThuChi/themthuchi",
+                    data: thuchi,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            $scope.hoaDonThuChi = {
+                                NgayLap: new Date(),
+                                NguoiLap: @Html.Raw(Json.Encode(ViewBag.NguoiLap)),
+                            };
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+}
+
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Thêm hóa đơn thu chi
+        </h1>
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <style>
+            .example-modal .modal {
+                position: relative;
+                top: auto;
+                bottom: auto;
+                right: auto;
+                left: auto;
+                display: block;
+                z-index: 1;
+            }
+
+            .example-modal .modal {
+                background: transparent !important;
+            }
+
+            label.error {
+                color: red;
+                font-style: italic;
+            }
+        </style>
+
+        <div class="row">
+            <!-- left column -->
+            <div class="col-xs-12 col-md-10 col-md-offset-1">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Thêm hóa đơn</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <!-- form start -->
+                    <form role="form" id="">
+                        <div class="box-body">
+                            <div class="form-group col-xs-12">
+                                <label for="">Tên hóa đơn</label>
+                                <input type="text" class="form-control" ng-model="hoaDonThuChi.Ten" placeholder="Tên hóa đơn">
+                            </div>
+                            <div class="form-group col-xs-12 col-md-6">
+                                <label for="">Loại</label>
+                                @*<input type="text" class="form-control" id="maKhachHang" value="@ViewBag.tenKhachHang" placeholder="Khách hàng">*@
+                                <select class="form-control select2" ng-model="hoaDonThuChi.Loai" required>
+                                    <option selected="selected" value="">Chọn loại</option>
+                                    <option value="thu">Thu</option>
+                                    <option value="chi">Chi</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-xs-12 col-md-6">
+                                <label for="">Ngày lập</label>
+                                <input class="form-control" type="date" ng-model="hoaDonThuChi.NgayLap" placeholder="Ngày lập">
+                            </div>
+                            <div class="form-group  col-xs-12 col-md-6">
+                                <label for="">Người lập</label>
+                                <input class="form-control" type="text" ng-model="hoaDonThuChi.NguoiLap" placeholder="Người lập">
+                            </div>
+                            <div class="form-group  col-xs-12 col-md-6">
+                                <label for="">Giá trị</label>
+                                <input class="form-control" type="text" ng-model="hoaDonThuChi.GiaTri" placeholder="Giá trị">
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                        <div class="box-footer">
+                            <a href="@Url.Action("danhsachthuchi","ThuChi")" class="" style="float: left;">Danh sách hóa đơn</a>
+                            <a href="#" type="submit" ng-click="themThuChi()" class="btn btn-primary" style="float: right;">Lưu hóa đơn</a>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.box -->
+            </div>
+            <!--/.col (left) -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>

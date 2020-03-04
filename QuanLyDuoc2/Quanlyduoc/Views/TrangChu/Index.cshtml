@@ -1,0 +1,517 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section styles{
+    <link href="~/Content/User/css/linearicons.css" rel="stylesheet" />
+    <link href="~/Content/User/css/magnific-popup.css" rel="stylesheet" />
+    <link href="~/Content/User/css/nice-select.css" rel="stylesheet" />
+    <link href="~/Content/User/css/animate.min.css" rel="stylesheet" />
+    <link href="~/Content/User/css/jquery-ui.css" rel="stylesheet" />
+    <link href="~/Content/User/css/owl.carousel.css" rel="stylesheet" />
+    <link href="~/Content/User/css/main.css" rel="stylesheet" />
+}
+
+@section scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
+    <script src="~/Content/User/js/vendor/bootstrap.min.js"></script>
+    <script src="~/Content/User/js/easing.min.js"></script>
+    <script src="~/Content/User/js/hoverIntent.js"></script>
+    <script src="~/Content/User/js/superfish.min.js"></script>
+    <script src="~/Content/User/js/jquery.ajaxchimp.min.js"></script>
+    <script src="~/Content/User/js/jquery.magnific-popup.min.js"></script>
+    <script src="~/Content/User/js/jquery-ui.js"></script>
+    <script src="~/Content/User/js/owl.carousel.min.js"></script>
+    <script src="~/Content/User/js/jquery.nice-select.min.js"></script>
+    <script src="~/Content/User/js/mail-script.js"></script>
+    <script src="~/Content/User/js/main.js"></script>
+    <script>
+        var scope;
+        myapp = angular.module("myapp", []);
+        myapp.controller('global', ['$scope', '$http', function ($scope, $http) {
+            $scope.model = @Html.Raw(Json.Encode(Model.Data));
+
+            $scope.tuvan = {};
+            $scope.submitThongTin = function() {
+                var tuVan = JSON.stringify($scope.tuvan);
+                $.ajax({
+                    type: "post",
+                    url: "TuVan/SendInfo",
+                    data: tuVan,
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.success === "success") {
+                            swal(data.msg, "", "success");
+                            $scope.tuvan = {};
+                            $scope.$applyAsync();
+                        }
+                        else {
+                            swal(data.msg, "", "error");
+                        }
+
+                    }
+                });
+            };
+
+            scope = $scope;
+        }]);
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#start-top').click(function (event) {
+                var offset = $('#open-hour').offset().top - 100;
+                //console.log(offset);
+                $('html,body').animate({ scrollTop: offset }, 700);
+            });
+        });
+    </script>
+}
+
+<!-- start banner Area -->
+<section class="banner-area relative" id="home">
+    <div class="overlay overlay-bg"></div>
+    <div class="container">
+        <div class="row fullscreen d-flex justify-content-center align-items-center">
+            <div class="banner-content col-lg-9 col-md-12 justify-content-center">
+                <h6 class="text-uppercase">Dược phẩm uy tín, chất lượng</h6>
+                <h1>
+                    Công ty dược phẩm Nghệ An
+                </h1>
+                <p class="text-white mx-auto">
+                    Chúng tôi luôn đặt sức khỏe và lợi ích của khách hàng lên hàng đầu.
+                </p>
+                <a href="#" class="primary-btn header-btn text-uppercase mt-10" id="start-top">Tiếp tục</a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End banner Area -->
+<!-- Start open-hour Area -->
+<section class="open-hour-area" id="open-hour">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-12 open-hour-wrap">
+                <h1>Giờ mở cửa</h1>
+                <p>
+                    Để lại thông tin cho chúng tôi để được tư vấn và có được sản phẩm tốt nhất
+                </p>
+                <a class="open-btn" href="#"> <span class="circle"></span>Giờ mở của của chúng tôi</a>
+                <div class="date-list d-flex flex-row justify-content-center">
+                    <ul class="colm-1">
+                        <li>Thứ 2 - Thứ 6</li>
+                        <li>Thứ 7</li>
+                        <li>Chủ nhật</li>
+                    </ul>
+                    <ul class="colm-2">
+                        <li><span>:</span>   07:00am to 05:00pm</li>
+                        <li><span>:</span>   10:00am to 03:00pm</li>
+                        <li><span>:</span>   đóng cửa</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End open-hour Area -->
+<!-- Start service Area -->
+<section class="service-area section-gap">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-12 pb-40 header-text text-center">
+                <h1 class="pb-10">Sản phẩm chúng tôi cung cấp</h1>
+                <p>
+                    Công ty dược phẩm chúng tôi luôn cung cấp cho khách hàng những sản phẩm tốt và phù hợp nhất.
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6" ng-repeat="item in model.JdauThuoc" style="margin-bottom: 35px;">
+                <a href="/map/Chi-tiet-dau-thuoc/{{item.MaDT}}">
+                    <div class="single-service">
+                        <img style="width:225px; height: 225px;" class="img-fluid" ng-src="~/Content/Images/DauThuoc/{{item.Image}}" src="" alt="">
+                        <h4>{{item.TenDauThuoc}}</h4>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End service Area -->
+<!-- Start home-about Area -->
+<!-- <section class="home-about-area section-gap relative">
+    <div class="container">
+        <div class="row align-items-center justify-content-end">
+            <div class="col-lg-6 no-padding home-about-right">
+                <h1 class="text-white">
+                    Who we are <br>
+                    to Serve the nation
+                </h1>
+                <p>
+                    inappropriate behavior is often laughed off as “boys will be boys,” women face higher conduct standards especially in the workplace. That’s why it’s crucial that, as women, our behavior on the job is beyond reproach.
+                </p>
+                <div class="row no-gutters">
+                    <div class="single-services col">
+                        <span class="lnr lnr-diamond"></span>
+                        <a href="#">
+                            <h4 class="text-white">Expert Services</h4>
+                        </a>
+                        <p>
+                            Usage of the Internet is becoming more common due to rapid advancement of technology.
+                        </p>
+                    </div>
+                    <div class="single-services col">
+                        <span class="lnr lnr-phone"></span>
+                        <a href="#">
+                            <h4 class="text-white">Great Support</h4>
+                        </a>
+                        <p>
+                            Usage of the Internet is becoming more common due to rapid advancement of technology.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+<!-- End home-about Area -->
+<!-- Start testomial Area -->
+<section class="testomial-area section-gap" style="border-bottom: 1px solid #d0cece;">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Phản hồi từ khách hàng</h1>
+                    <p>Sản phẩm đã có được những phản hồi tích cực từ khách hàng.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="active-testimonial-carusel">
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t1.png" alt="">
+                    <p class="desc">
+                        Tôi đã dùng sản phẩm của công ty dược nghệ an được gần 1 năm, cảm thấy sản phẩm của công ty rất chất lượng. Đội ngũ nhân viên kinh nghiệm và nhiệt tình. Tôi rất hài lòng về công ty.
+                    </p>
+                    <h4>Nguyễn Thị Sương</h4>
+                    <p>
+                        Nhân viên văn phòng
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t2.png" alt="">
+                    <p class="desc">
+                        Tôi rất hài hài lòng về quy trình làm việc của  công ty. Hệ thống quản trị của website thì rất hữu dụng và nhiều tính năng thân thiện với người dùng.Tôi đánh giá cao về công ty.
+                    </p>
+                    <h4>Nguyễn Hoàng</h4>
+                    <p>
+                        Kiến trúc sư
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t3.png" alt="">
+                    <p class="desc">
+                        Thái độ phục vụ của trình dược viên rất nhiệt tình và tận tâm, mọi vướng mắc của Tôi đều được giải thích và phân tích rõ ràng. Chất lượng sản phẩm hơn cả mong đợi
+                    </p>
+                    <h4>Nguyễn Thùy Linh</h4>
+                    <p>
+                        Nhân viên ngân hàng
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t1.png" alt="">
+                    <p class="desc">
+                        Tôi đã dùng sản phẩm của công ty dược nghệ an được gần 1 năm, cảm thấy sản phẩm của công ty rất chất lượng. Đội ngũ nhân viên kinh nghiệm và nhiệt tình. Tôi rất hài lòng về công ty.
+                    </p>
+                    <h4>Nguyễn Thị Sương</h4>
+                    <p>
+                        Nhân viên văn phòng
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t2.png" alt="">
+                    <p class="desc">
+                        Tôi rất hài hài lòng về quy trình làm việc của  công ty. Hệ thống quản trị của website thì rất hữu dụng và nhiều tính năng thân thiện với người dùng.Tôi đánh giá cao về công ty.
+                    </p>
+                    <h4>Nguyễn Hoàng</h4>
+                    <p>
+                        Kiến trúc sư
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t3.png" alt="">
+                    <p class="desc">
+                        Thái độ phục vụ của trình dược viên rất nhiệt tình và tận tâm, mọi vướng mắc của Tôi đều được giải thích và phân tích rõ ràng. Chất lượng sản phẩm hơn cả mong đợi
+                    </p>
+                    <h4>Nguyễn Thùy Linh</h4>
+                    <p>
+                        Nhân viên ngân hàng
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t1.png" alt="">
+                    <p class="desc">
+                        Tôi đã dùng sản phẩm của công ty dược nghệ an được gần 1 năm, cảm thấy sản phẩm của công ty rất chất lượng. Đội ngũ nhân viên kinh nghiệm và nhiệt tình. Tôi rất hài lòng về công ty.
+                    </p>
+                    <h4>Nguyễn Thị Sương</h4>
+                    <p>
+                        Nhân viên văn phòng
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t2.png" alt="">
+                    <p class="desc">
+                        Tôi rất hài hài lòng về quy trình làm việc của  công ty. Hệ thống quản trị của website thì rất hữu dụng và nhiều tính năng thân thiện với người dùng.Tôi đánh giá cao về công ty.
+                    </p>
+                    <h4>Nguyễn Hoàng</h4>
+                    <p>
+                        Kiến trúc sư
+                    </p>
+                </div>
+                <div class="single-testimonial item">
+                    <img class="mx-auto" src="~/Content/User/img/t3.png" alt="">
+                    <p class="desc">
+                        Thái độ phục vụ của trình dược viên rất nhiệt tình và tận tâm, mọi vướng mắc của Tôi đều được giải thích và phân tích rõ ràng. Chất lượng sản phẩm hơn cả mong đợi
+                    </p>
+                    <h4>Nguyễn Thùy Linh</h4>
+                    <p>
+                        Nhân viên ngân hàng
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End testomial Area -->
+<!-- Start team Area -->
+<section class="team-area section-gap" id="team">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-70 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Đội ngũ của chúng tôi</h1>
+                    <p>Chúng tôi có đội ngũ bác sĩ, dược sĩ trình độ cao, phẩm chất nghề nghiệp tốt, luôn cố gắng hết mình vì khách hàng.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center d-flex align-items-center">
+            <div class="col-lg-3 col-md-6 single-team">
+                <div class="thumb">
+                    <img class="img-fluid" src="~/Content/User/img/t1.jpg" alt="">
+                    <div class="align-items-end justify-content-center d-flex">
+                        <p>
+                            Dược sĩ
+                        </p>
+                        <h4>Nguyễn Hải Lâm</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-team">
+                <div class="thumb">
+                    <img class="img-fluid" src="~/Content/User/img/t2.jpg" alt="">
+                    <div class="align-items-end justify-content-center d-flex">
+                        <p>
+                            Tiến sĩ dược
+                        </p>
+                        <h4>Nguyễn Kim Tuyến</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-team">
+                <div class="thumb">
+                    <img class="img-fluid" src="~/Content/User/img/t3.jpg" alt="">
+                    <div class="align-items-end justify-content-center d-flex">
+                        <p>
+                            Viện nghiên cứu
+                        </p>
+                        <h4>Hồ Phúc Khang</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-team">
+                <div class="thumb">
+                    <img class="img-fluid" src="~/Content/User/img/t4.jpg" alt="">
+                    <div class="align-items-end justify-content-center d-flex">
+                        <p>
+                            Dược sĩ
+                        </p>
+                        <h4>Lê Kim Oanh</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End team Area -->
+<!-- Start feature Area -->
+<section class="feature-area section-gap">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-60 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Điểm nổi bật của chúng tôi</h1>
+                    <p>Hệ thống website của chúng tôi hoạt động 24h mỗi ngày, bạn có thể để lại thông tin mọi lúc mọi nơi để được tư vấn trực tiếp bởi đội ngũ trình dược viên chuyên nghiệp</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-rocket"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Website hoạt động liên tục</h4>
+                        <p>
+                            Bạn có thể truy cập website mọi lúc mọi nơi.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-heart-pulse"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Sức khỏe là trên hết</h4>
+                        <p>
+                            Phương châm của chúng tôi là "Sức khỏe khách hàng là ưu tiên hàng đầu".
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-chart-bars"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Sản phẩm uy tín chất lượng</h4>
+                        <p>
+                            Thị trường ngành dược là một thị trường lớn, chúng tôi luôn cam kết đưa đến khách hàng những sản phẩm uy tin chất lượng.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-users"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Đội ngũ nhân viên chuyên nghiệp</h4>
+                        <p>
+                            Ngành dược là một ngành đặc thù. Vì vậy việc tuyển chọn nhân viên rất cẩn thận và khắt khe.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-paw"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Dental Science</h4>
+                        <p>
+                            inappropriate behavior is often laughed off as “boys will be boys,” women face higher conduct women face higher conduct.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6">
+                <div class="single-feature d-flex flex-row">
+                    <div class="icon">
+                        <span class="lnr lnr-bug"></span>
+                    </div>
+                    <div class="details">
+                        <h4>Intensive Care</h4>
+                        <p>
+                            inappropriate behavior is often laughed off as “boys will be boys,” women face higher conduct women face higher conduct.
+                        </p>
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</section>
+<!-- End feature Area -->
+<!-- Start blog Area -->
+<!-- <section class="blog-area section-gap" id="blog">
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="menu-content pb-70 col-lg-8">
+                <div class="title text-center">
+                    <h1 class="mb-10">Latest From Our Blog</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore  et dolore magna aliqua.</p>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 single-blog">
+                <div class="thumb">
+                    <img class="img-fluid" src="img/b1.jpg" alt="">
+                </div>
+                <p class="date">10 Jan 2018</p>
+                <a href="blog-single.html"><h4>Addiction When Gambling
+                Becomes A Problem</h4></a>
+                <p>
+                    inappropriate behavior ipsum dolor sit amet, consectetur.
+                </p>
+                <div class="meta-bottom d-flex justify-content-between">
+                    <p><span class="lnr lnr-heart"></span> 15 Likes</p>
+                    <p><span class="lnr lnr-bubble"></span> 02 Comments</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-blog">
+                <div class="thumb">
+                    <img class="img-fluid" src="img/b2.jpg" alt="">
+                </div>
+                <p class="date">10 Jan 2018</p>
+                <a href="blog-single.html"><h4>Addiction When Gambling
+                Becomes A Problem</h4></a>
+                <p>
+                    inappropriate behavior ipsum dolor sit amet, consectetur.
+                </p>
+                <div class="meta-bottom d-flex justify-content-between">
+                    <p><span class="lnr lnr-heart"></span> 15 Likes</p>
+                    <p><span class="lnr lnr-bubble"></span> 02 Comments</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-blog">
+                <div class="thumb">
+                    <img class="img-fluid" src="img/b3.jpg" alt="">
+                </div>
+                <p class="date">10 Jan 2018</p>
+                <a href="blog-single.html"><h4>Addiction When Gambling
+                Becomes A Problem</h4></a>
+                <p>
+                    inappropriate behavior ipsum dolor sit amet, consectetur.
+                </p>
+                <div class="meta-bottom d-flex justify-content-between">
+                    <p><span class="lnr lnr-heart"></span> 15 Likes</p>
+                    <p><span class="lnr lnr-bubble"></span> 02 Comments</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 single-blog">
+                <div class="thumb">
+                    <img class="img-fluid" src="img/b4.jpg" alt="">
+                </div>
+                <p class="date">10 Jan 2018</p>
+                <a href="blog-single.html"><h4>Addiction When Gambling
+                Becomes A Problem</h4></a>
+                <p>
+                    inappropriate behavior ipsum dolor sit amet, consectetur.
+                </p>
+                <div class="meta-bottom d-flex justify-content-between">
+                    <p><span class="lnr lnr-heart"></span> 15 Likes</p>
+                    <p><span class="lnr lnr-bubble"></span> 02 Comments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+<!-- End blog Area -->

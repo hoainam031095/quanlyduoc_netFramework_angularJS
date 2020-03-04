@@ -1,0 +1,13 @@
+﻿body {
+}
+.content-wrapper .content .modal-dialog {
+    width: 50%;
+}
+
+
+
+@media (max-width: 767px) {
+    .content-wrapper .content .modal-dialog {
+        width: 94%;
+    }
+}
